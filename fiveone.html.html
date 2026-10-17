@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章第一节《气质》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 24px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 120px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🌈 气质 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第五章第一节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>气质的定义</div>
+    <div class="level-dot" id="lv2">关卡二<br>托马斯·切斯</div>
+    <div class="level-dot" id="lv3">关卡三<br>凯根·我国学者</div>
+    <div class="level-dot" id="lv4">关卡四<br>发展与行为</div>
+    <div class="level-dot" id="lv5">关卡五<br>气质与教育</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：气质的定义
+    name: "气质的定义",
+    questions: [
+      { q: "气质是指什么？", opts: ["由生物基础决定的、可观察到的行为和情绪模式", "人后天学习形成的性格", "对客观事物的反映", "记忆和思维的能力"], ans: 0, exp: "气质是由生物基础决定的、可观察到的行为和情绪模式。" },
+      { q: "气质是一个人什么的基础？", opts: ["个性和社会性发展", "生理发育", "语言发展", "动作发展"], ans: 0, exp: "气质是最早表现出的稳定的个体差异，是一个人个性和社会性发展的基础。" },
+      { q: "“江山易改，本性难移”中的“本性”指的是？", opts: ["气质", "性格", "信念", "需要"], ans: 0, exp: "“本性”指气质，气质具有遗传基础，相对稳定，故说“江山易改，本性难移”。" },
+      { q: "气质最早表现为？", opts: ["稳定的个体差异", "不稳定的行为", "后天的习惯", "社会规范的产物"], ans: 0, exp: "气质是最早表现出的稳定的个体差异。" },
+      { q: "同卵双胞胎瑶瑶和冉冉出生时即表现差异，说明气质具有？", opts: ["先天遗传性", "后天习得性", "社会制约性", "教育塑造性"], ans: 0, exp: "双胞胎出生几天内即表现出气质差异，说明气质与先天遗传特征有关。" }
+    ]
+  },
+  { // 关卡二：托马斯和切斯的三类型说
+    name: "托马斯·切斯",
+    questions: [
+      { q: "托马斯和切斯从几个维度来划分不同的气质类型？", opts: ["五个", "七个", "九个", "三个"], ans: 2, exp: "托马斯和切斯从九个维度来划分气质类型，包括活动水平、规律性等。" },
+      { q: "容易型儿童大约占？", opts: ["10%", "15%", "40%", "35%"], ans: 2, exp: "容易型约占40%，容易建立规律作息，容易适应新环境，容易受到成人喜爱。" },
+      { q: "作息不规律、经常烦躁易怒、不易安抚的儿童属于？", opts: ["容易型", "困难型", "慢热型", "混合型"], ans: 1, exp: "困难型约占10%，作息不规律、经常烦躁易怒、不易安抚、接受变化慢。" },
+      { q: "慢热型儿童的主要特点是？", opts: ["积极活泼、适应快", "活动水平低、反应强度弱、退缩逃避", "作息规律、易安抚", "攻击性强"], ans: 1, exp: "慢热型约占15%，活动水平较低、反应强度很弱、心境消极，但不像困难型大哭大闹，而是退缩或逃避。" },
+      { q: "在九个维度上无法划分到三种基本类型的儿童约占？", opts: ["40%", "10%", "15%", "35%"], ans: 3, exp: "另外有35%的儿童在九个维度上有自己独特的组合方式，无法划分到三种类型中的任何一种。" }
+    ]
+  },
+  { // 关卡三：凯根与我国学者的分类
+    name: "凯根·我国学者",
+    questions: [
+      { q: "凯根认为儿童在面对不熟悉的人、物或情境的最初几分钟内的行为反应最能反映气质特征？", opts: ["5分钟", "10分钟", "15分钟", "30分钟"], ans: 2, exp: "凯根认为儿童面对不熟悉的人、物或情境的最初15分钟内的行为反应，最能反映一个人稳定的气质特征。" },
+      { q: "在陌生情境下表现出敏感、退缩、胆怯行为的儿童属于凯根的？", opts: ["抑制型", "非抑制型", "容易型", "困难型"], ans: 0, exp: "表现出敏感、退缩、胆怯等抑制行为的儿童称为抑制型儿童。" },
+      { q: "我国学者杨丽珠等将3-9岁儿童的气质类型划分为？", opts: ["三种", "四种", "五种", "七种"], ans: 2, exp: "我国学者杨丽珠等将3-9岁儿童的气质类型划分为活泼型、专注型、抑制型、均衡型和敏感型五种。" },
+      { q: "精力旺盛、好动、情绪易激动、坚持性差、注意力易分散的气质类型是？", opts: ["活泼型", "专注型", "抑制型", "敏感型"], ans: 0, exp: "活泼型儿童精力旺盛、好动、情绪易激动、不稳定、坚持性差、注意力易分散。" },
+      { q: "注意力持久、坚持性强、喜欢安静活动、活动量小、情绪稳定的气质类型是？", opts: ["活泼型", "专注型", "均衡型", "敏感型"], ans: 1, exp: "专注型儿童注意力持久、坚持性强、喜欢安静的活动、活动量小、情绪稳定、不易激动。" }
+    ]
+  },
+  { // 关卡四：气质的发展与社会行为
+    name: "发展与行为",
+    questions: [
+      { q: "气质发展的稳定性说明？", opts: ["气质与先天遗传特征有关，较为稳定", "气质完全不可改变", "气质随年龄剧变", "气质由环境决定"], ans: 0, exp: "儿童生来就有某种气质表现，说明气质与先天遗传特征有关，气质具有长期的稳定性。" },
+      { q: "气质发展的可变性说明？", opts: ["气质完全不可改变", "后天的环境和教育因素可一定程度上改变和塑造气质", "气质与教育无关", "气质是固定不变的"], ans: 1, exp: "由于婴幼儿大脑尚未发育好，后天的环境和教育因素可一定程度上改变和塑造气质类型及其行为表现。" },
+      { q: "抑制型气质的婴幼儿在同伴交往中的表现是？", opts: ["互动更多、更主动", "与同伴互动更少、更多时候独处", "攻击性强", "完全回避所有交往"], ans: 1, exp: "研究显示，与非抑制组幼儿相比，抑制组幼儿与同伴的互动更少，更多时候是一个人独处。" },
+      { q: "关于气质与社会适应的说法正确的是？", opts: ["困难型儿童可能比容易型儿童有更多攻击行为", "慢热型儿童攻击行为最多", "气质不影响社会适应", "困难型儿童适应最好"], ans: 0, exp: "“困难型”儿童可能比“容易型”儿童有更多的攻击行为，且攻击行为具有跨时间稳定性。" },
+      { q: "下列哪项属于气质发展的特点？", opts: ["只有稳定性", "只有可变性", "既稳定又可塑（稳定性和可变性）", "既不稳定也不可变"], ans: 2, exp: "气质发展兼具稳定性（受遗传影响）和可变性（可受后天环境和教育塑造）。" }
+    ]
+  },
+  { // 关卡五：气质与教育
+    name: "气质与教育",
+    questions: [
+      { q: "儿童气质与环境要求之间的匹配程度称为？", opts: ["拟合度", "适应度", "匹配率", "协调度"], ans: 0, exp: "儿童气质与环境要求之间的匹配程度称为拟合度。" },
+      { q: "我们应追求什么样的教育方式？", opts: ["千篇一律的教育", "最优拟合度的教育", "越严格越好", "放任不管"], ans: 1, exp: "很难有一种“好的教育”适合所有儿童，我们追求的应该是具有“最优拟合度”的教育方式。" },
+      { q: "下列哪项属于儿童气质专家总结的教育原则？", opts: ["察觉和尊重个体差异", "给儿童贴标签", "统一标准要求", "忽视个体差异"], ans: 0, exp: "教育原则包括：察觉和尊重个体差异、环境创设、不要轻易贴标签。" },
+      { q: "对于困难型和慢热型的儿童进入新环境时应？", opts: ["立即放入新环境", "提供一个过渡期，让他们缓慢进入", "置之不理", "要求立即适应"], ans: 1, exp: "对于困难型和慢热型儿童要提供一个过渡期，让他们缓慢进入新环境。" },
+      { q: "关于“不要轻易贴标签”的理解正确的是？", opts: ["应给儿童贴上“适应困难”标签", "儿童气质尚不稳定还有可塑性，不宜轻易贴标签", "贴标签有利于教育", "所有儿童气质都相同"], ans: 1, exp: "儿童是否出现适应问题还取决于气质和环境的拟合度，且儿童气质尚不稳定、还有可塑性，最好不要轻易贴标签。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是气质知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

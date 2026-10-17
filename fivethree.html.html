@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章第三节《自我与他人》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 {
+    font-size: 24px;
+    color: #c0392b;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .level-dot {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 12px;
+    margin: 0 4px;
+    font-size: 13px;
+    font-weight: bold;
+    background: #ecf0f1;
+    color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar {
+    text-align: right;
+    font-size: 14px;
+    color: #e67e22;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px;
+    border: 2px solid #dcdde1;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #34495e;
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback {
+    margin-top: 16px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    display: none;
+    line-height: 1.6;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎯 自我与他人 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第五章第三节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>自我发展</div>
+    <div class="level-dot" id="lv2">关卡二<br>自我调节</div>
+    <div class="level-dot" id="lv3">关卡三<br>认识他人</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 150</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group">
+      <button class="btn btn-next" id="q1-next" disabled>下一题 →</button>
+    </div>
+  </div>
+
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group">
+      <button class="btn btn-next" id="q2-next" disabled>下一题 →</button>
+    </div>
+  </div>
+
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group">
+      <button class="btn btn-next" id="q3-next" disabled>下一题 →</button>
+    </div>
+  </div>
+
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 150</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：自我发展
+    name: "自我发展",
+    questions: [
+      { q: "自我主要由哪三个方面构成？", opts: ["认知、情感、意志", "生理、心理、社会", "感觉、知觉、思维", "记忆、注意、语言"], ans: 0, exp: "自我是由知（认知）、情（体验）、意（调节）三方面构成的。" },
+      { q: "客体自我阶段的年龄段是？", opts: ["0-1岁", "1-2岁", "2岁以后", "3岁以后"], ans: 1, exp: "客体自我阶段为1-2岁，之前0-1岁是自我感知阶段。" },
+      { q: "自尊是自我体验中最主要的方面吗？", opts: ["是", "不是", "不确定", "只对幼儿成立"], ans: 0, exp: "自我体验是自我的情感成分，自尊是自我体验中最主要的方面。" },
+      { q: "特质自尊的特点是什么？", opts: ["随情境波动", "不受外界情境和他人反馈影响", "只在成功时出现", "随年龄降低"], ans: 1, exp: "特质自尊是个体对自身价值的一般性评价，具有相当稳定性，不受外界情境和他人反馈影响。" },
+      { q: "状态自尊的特点是什么？", opts: ["长期稳定不变", "某一时刻的自我评价，波动较大", "只与学习有关", "不受情境影响"], ans: 1, exp: "状态自尊是某一时刻的自我评价，会因情境不同有很大波动性。" }
+    ]
+  },
+  { // 关卡二：自我调节
+    name: "自我调节",
+    questions: [
+      { q: "自我调节指什么？", opts: ["对自己心理和行为发起或停止、维持或放弃的过程", "对别人情绪的调节", "记忆保持的过程", "语言学习的过程"], ans: 0, exp: "自我调节指个体对自己的心理和行为发起或停止、维持或放弃的过程。" },
+      { q: "服从在自我调节发展早期的作用是？", opts: ["阻碍独立性发展", "儿童内化外在社会要求的必经之路", "与自我调节无关", "只对成人有意义"], ans: 1, exp: "服从在自我调节发展早期来讲，是儿童内化外在社会要求的必经之路。" },
+      { q: "消极的控制策略（如批评、恐吓）会产生什么结果？", opts: ["引发更多服从", "诱发儿童不服从行为", "提高自尊", "增强学习兴趣"], ans: 1, exp: "消极控制策略（批评、恐吓、干扰活动等）会诱发儿童的不服从行为。" },
+      { q: "下列哪项属于积极的控制策略？", opts: ["批评", "恐吓", "表扬、鼓励、协商", "干扰儿童活动"], ans: 2, exp: "积极控制策略包括表扬、鼓励、协商、解释、建议等，能引发儿童更多服从行为。" },
+      { q: "儿童不服从行为的长远积极意义在于？", opts: ["体现独立性和自主性", "说明孩子调皮", "不利于社会适应", "只对家长有影响"], ans: 0, exp: "不服从具有积极意义：随着年龄增长，儿童需要在亲子互动中体现独立性和自主性。" }
+    ]
+  },
+  { // 关卡三：对他人的认识
+    name: "认识他人",
+    questions: [
+      { q: "观点采择能力简单来讲就是？", opts: ["换位思考", "自我中心", "记忆能力", "语言能力"], ans: 0, exp: "观点采择能力就是换位思考，指能站在他人立场上观察、感受和思考。" },
+      { q: "皮亚杰通过什么著名实验提出学前儿童思维自我中心的特点？", opts: ["视崖实验", "三山实验", "红点实验", "守恒实验"], ans: 1, exp: "皮亚杰通过著名的“三山实验”提出学前儿童思维突出特点是自我中心。" },
+      { q: "塞尔曼通过什么研究大部分学前儿童处于自我中心的观点采择阶段？", opts: ["两难情境", "三山实验", "意外地点任务", "依恋实验"], ans: 0, exp: "塞尔曼通过“两难情境”（如霍莉的故事）发现大部分学前儿童处于自我中心的观点采择阶段。" },
+      { q: "心理理论重要的研究领域是？", opts: ["对错误信念的研究", "对记忆的研究", "对语言的研究", "对情绪的研究"], ans: 0, exp: "心理理论一个重要的研究领域是对错误信念的研究，如意外地点任务。" },
+      { q: "在错误信念任务中，大部分3岁以下儿童的表现是？", opts: ["明白基于信念行动", "不明白一个人是基于自己的信念去行动的", "和4岁儿童一样", "无法完成任务以外的事"], ans: 1, exp: "3岁以下儿童并不明白一个人是基于自己的信念去行动的，而4岁以上儿童知道是信念决定行动。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;   // 0,1,2
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  // 禁用所有选项
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    // 关卡完成
+    currentLevel++;
+    if (currentLevel < 3) {
+      // 更新关卡状态点
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      // 全部完成
+      document.getElementById("lv3").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv3").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 150) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是知识小达人！"; }
+  else if (totalScore >= 120) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 90) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 60) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  // 重置关卡点
+  ["lv1","lv2","lv3"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  // 显示关卡一
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+// 绑定下一题按钮
+["q1","q2","q3"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+// 初始化
+renderQuestion();
+</script>
+</body>
+</html>

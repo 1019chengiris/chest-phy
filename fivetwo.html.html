@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章第二节《情绪》闯关游戏（含情绪调节关）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 120px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>😊 情绪 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第五章第二节（含关卡五：情绪调节）</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>情绪的发生</div>
+    <div class="level-dot" id="lv2">关卡二<br>基本情绪</div>
+    <div class="level-dot" id="lv3">关卡三<br>分化与社会化</div>
+    <div class="level-dot" id="lv4">关卡四<br>理解与表达</div>
+    <div class="level-dot" id="lv5">关卡五<br>情绪调节</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：情绪的发生
+    name: "情绪的发生",
+    questions: [
+      { q: "情绪的定义是什么？", opts: ["个体对经验的主观反应，并伴随生理和行为变化", "人脑对客观事物的直接反映", "对过去的回忆", "对未来的想象"], ans: 0, exp: "情绪就是个体对经验的主观反应，并伴随生理和行为变化。" },
+      { q: "突然的声响让儿童恐惧、心跳加快、躲到成人身后，这体现了情绪的哪个特点？", opts: ["伴随生理和行为变化", "具有遗传性", "不随年龄改变", "只影响心理"], ans: 0, exp: "恐惧时心跳加快、伴随自我保护行为，说明情绪伴随生理和行为变化。" },
+      { q: "婴儿原始的两种情绪基本状态是？", opts: ["趋向愉快和回避不愉快", "高兴和悲伤", "兴奋和安静", "爱与恨"], ans: 0, exp: "婴儿原始情绪表达主要有两种基本状态：趋向愉快和回避不愉快。" },
+      { q: "婴儿早期的情绪表达具有什么意义？", opts: ["生物适应意义", "道德意义", "社会规范意义", "审美意义"], ans: 0, exp: "婴儿通过喜怒哀乐表达生存需要，早期情绪表达具有生物适应意义。" },
+      { q: "婴儿生来就有表达情绪的能力吗？", opts: ["有", "没有", "半岁后才出现", "一岁后才出现"], ans: 0, exp: "婴儿生来就有表达情绪的能力，通过喜怒哀乐与成人进行主动的信息交流。" }
+    ]
+  },
+  { // 关卡二：基本情绪的发展
+    name: "基本情绪",
+    questions: [
+      { q: "下列哪项不属于儿童的基本情绪？", opts: ["有趣", "开心", "害羞", "嫉妒"], ans: 3, exp: "儿童基本情绪包括有趣、开心、惊讶、苦恼、生气、害怕、害羞、恶心、厌恶等，嫉妒不属于基本情绪。" },
+      { q: "开心这种情绪主要表现为？", opts: ["微笑", "哭泣", "尖叫", "沉默"], ans: 0, exp: "开心是一种愉快的情绪体验，主要表现为微笑。" },
+      { q: "婴儿微笑发展第三阶段（5、6个月起）的特点是？", opts: ["有选择的社会性微笑", "自发微笑", "无选择的社会性微笑", "完全停止微笑"], ans: 0, exp: "微笑三阶段：自发微笑(0-5周)→无选择的社会性微笑(3、4周起)→有选择的社会性微笑(5、6个月起)。" },
+      { q: "苦恼和生气的主要表现方式是？", opts: ["哭泣", "微笑", "跑动", "大笑"], ans: 0, exp: "苦恼和生气是消极情绪体验，主要表现方式为哭泣。" },
+      { q: "害怕的适应功能在于？", opts: ["警戒作用，帮助摆脱危险情境", "放松作用", "促进进食", "增强记忆"], ans: 0, exp: "害怕的适应功能在于警戒作用，有助于个体摆脱危险情境。对人的害怕表现为怯生。" }
+    ]
+  },
+  { // 关卡三：情绪的分化与社会化
+    name: "分化与社会化",
+    questions: [
+      { q: "提出情绪分化理论的加拿大心理学家是？", opts: ["布里奇斯", "皮亚杰", "埃里克森", "斯金纳"], ans: 0, exp: "加拿大心理学家布里奇斯提出了情绪分化理论。" },
+      { q: "随着自我意识的出现，情绪分化为涉及自我的情绪，包括？", opts: ["骄傲、内疚和羞愧", "饥饿和口渴", "疼痛和寒冷", "听觉和视觉"], ans: 0, exp: "儿童出现自我意识后，情绪分化为涉及自我的情绪（骄傲、内疚、羞愧）及感受他人的情绪。" },
+      { q: "情绪的社会化趋势是？", opts: ["随年龄增长，面向教师、同伴的社会性微笑越来越多", "越来越只对母亲笑", "完全不再表达情绪", "情绪逐渐减少"], ans: 0, exp: "情绪社会化表现为社会性微笑增多，对教师、同伴的微笑越来越多。" },
+      { q: "学前儿童对他人情绪感同身受、产生共鸣的能力称为？", opts: ["移情", "投射", "同化", "顺应"], ans: 0, exp: "能识别他人表情、理解情绪原因和结果，并对他人情绪感同身受、产生共鸣，就是移情能力。" },
+      { q: "情绪的社会化说明情绪发展不仅不断分化复杂化，还是一个什么过程？", opts: ["社会化的过程", "退化的过程", "静止的过程", "遗传主导的过程"], ans: 0, exp: "情绪的发展既是不断分化、复杂化的过程，也是一个社会化的过程。" }
+    ]
+  },
+  { // 关卡四：情绪的理解与表达
+    name: "理解与表达",
+    questions: [
+      { q: "3-6岁儿童最先能识别的表情是？", opts: ["高兴", "恐惧", "惊奇", "厌恶"], ans: 0, exp: "3-6岁儿童最先能识别的是高兴，其次是愤怒、悲伤，再次是恐惧、惊奇和厌恶。" },
+      { q: "大约从几岁开始，儿童能将情绪与引发情绪的情境相联系？", opts: ["3岁", "1岁", "6个月", "6岁"], ans: 0, exp: "大约从3岁开始，儿童能够将情绪与引发情绪的情境相联系。" },
+      { q: "5-6岁时儿童在情绪理解上能做到？", opts: ["对自己和他人的情绪体验给出相对合理的解释", "还不能理解情绪", "只理解积极情绪", "完全回避情绪"], ans: 0, exp: "5-6岁时儿童能够对自己和他人的情绪体验给出相对合理的解释。" },
+      { q: "在掌握表达情绪的语言之前，儿童主要通过什么表达情绪？", opts: ["面部表情和身体语言", "文字和书写", "绘画", "唱歌"], ans: 0, exp: "在掌握表达情绪的语言之前，儿童主要通过面部表情和身体语言表达情绪。" },
+      { q: "婴儿与学前儿童在情绪表达上的差异，下列说法正确的是？", opts: ["婴儿毫无保留地表达情绪，儿童会逐渐掩饰真实情绪", "婴儿会掩饰情绪，儿童不掩饰", "两者都不掩饰", "两者都会掩饰"], ans: 0, exp: "婴儿一般毫无保留地表达情绪，随年龄增长儿童社会经验日益丰富，开始掩饰真实情绪。" }
+    ]
+  },
+  { // 关卡五：情绪调节（独立关卡）
+    name: "情绪调节",
+    questions: [
+      { q: "情绪调节指的是？", opts: ["个体对情绪体验和情绪表达进行主动调节，以适应外界环境和人际互动需要的过程", "记忆保持的过程", "语言学习的过程", "运动协调的过程"], ans: 0, exp: "情绪调节是个体对情绪体验和情绪表达进行主动调节，以适应外界环境和人际互动需要的过程。" },
+      { q: "儿童没有得到喜欢的玩具时，安慰自己说“没关系，我可以去看看书”，这种调节方式是？", opts: ["内部调节", "外部调节", "减弱调节", "维持调节"], ans: 0, exp: "内部调节主要由个体自身完成，可调节对事件的主观评价或动作行为，此处属于内部调节。" },
+      { q: "当儿童的消极情绪太强烈时，我们需要对其强度进行调整，这种调节是？", opts: ["减弱调节", "外部调节", "维持调节", "增强调节"], ans: 0, exp: "如果消极情绪太强烈，需要“减弱调节”，对强度过高的消极情绪进行调整使其恢复平静。" },
+      { q: "个体通过调整自己的生理反应、表情行为等来调整情绪强度，这是？", opts: ["反应调节", "减弱调节", "维持调节", "原因调节"], ans: 0, exp: "反应调节指情绪体验已经产生后，个体通过调整生理反应、表情行为等来调整情绪强度。" },
+      { q: "学前儿童情绪调节能力的发展主要体现在？", opts: ["冲动性逐渐减少、稳定性有所提高、出现情绪的内隐性", "冲动性增多、稳定性下降、完全外显", "稳定性下降、出现外隐性", "冲动性不变、稳定性不变"], ans: 0, exp: "情绪调节发展三方面：冲动性逐渐减少、稳定性有所提高、出现情绪的内隐性。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是情绪知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

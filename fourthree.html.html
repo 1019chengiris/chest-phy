@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四章第三节《思维》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>💡 思维 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第四章第三节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>思维概述</div>
+    <div class="level-dot" id="lv2">关卡二<br>皮亚杰理论</div>
+    <div class="level-dot" id="lv3">关卡三<br>前运算特点</div>
+    <div class="level-dot" id="lv4">关卡四<br>概念·推理</div>
+    <div class="level-dot" id="lv5">关卡五<br>思维培养</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：思维概述
+    name: "思维概述",
+    questions: [
+      { q: "思维的定义是什么？", opts: ["借助动作、表象或语言实现的，对客观事物概括性和间接性的认识", "对客观事物个别属性的直接反映", "对过去的回忆", "对未来的想象"], ans: 0, exp: "思维是借助动作、表象或语言实现的，对客观事物概括性和间接性的认识，是认识的高级形式。" },
+      { q: "思维不是直接认识事物，而是借助已有知识经验来组织理解未感知的事物，这体现了思维的？", opts: ["间接性", "概括性", "组织性", "直观性"], ans: 0, exp: "间接性指思维不是直接认识事物，而是借助已有知识经验和一定方法来理解未感知的事物。" },
+      { q: "从大量感性材料中抽象概括出共同特性和本质特征，体现了思维的？", opts: ["间接性", "概括性", "组织性", "形象性"], ans: 1, exp: "概括性指思维必须把握大量感性材料，从中抽象概括出共同特性和本质特征。" },
+      { q: "儿童最常见的思维形式是？", opts: ["具体形象思维", "直观动作思维", "抽象逻辑思维", "发散思维"], ans: 0, exp: "具体形象思维是幼儿期思维发展最主要的特点，是儿童最常见的思维形式。" },
+      { q: "面对开放式问题产生多种思考方向、重组信息、产生大量新颖独特解决方法，这种思维是？", opts: ["发散思维", "聚合思维", "直觉思维", "分析思维"], ans: 0, exp: "发散思维指面对开放式问题形成各种思考方向、重组信息，产生大量新颖独特解决方法。" }
+    ]
+  },
+  { // 关卡二：皮亚杰理论
+    name: "皮亚杰理论",
+    questions: [
+      { q: "皮亚杰认知发展理论中，0-2岁属于哪个阶段？", opts: ["感知运动阶段", "前运算阶段", "具体运算阶段", "形式运算阶段"], ans: 0, exp: "感知运动阶段为出生至2岁，婴幼儿主要通过动作和感觉与环境互动实现智力发展。" },
+      { q: "皮亚杰认知发展理论中，2-7岁属于哪个阶段？", opts: ["感知运动阶段", "前运算阶段", "具体运算阶段", "形式运算阶段"], ans: 1, exp: "前运算阶段为2-7岁，突出特点是使用符号、思维具有象征性。" },
+      { q: "在感知运动阶段，儿童获得的最重要认知成就是？", opts: ["客体永久性", "守恒概念", "去自我中心", "假设演绎推理"], ans: 0, exp: "客体永久性是感知运动阶段儿童获得的最重要认知成就，即知道物体即使看不见仍存在。" },
+      { q: "皮亚杰理论中，个体把环境因素纳入已有动作图式或结构的过程叫？", opts: ["图式", "同化", "顺应", "平衡"], ans: 1, exp: "同化是幼儿把环境因素纳入头脑中已有的动作图式或结构中。" },
+      { q: "皮亚杰认为认知发展既不是起源于先天成熟，也不是起源于后天环境，而是起源于？", opts: ["动作", "语言", "情绪", "想象"], ans: 0, exp: "皮亚杰认为心理、智力、思维既不是起源于先天成熟，也不是起源于后天环境，而是起源于动作。" }
+    ]
+  },
+  { // 关卡三：前运算阶段的认知特点
+    name: "前运算特点",
+    questions: [
+      { q: "皮亚杰用“三山实验”证明了前运算阶段儿童的什么特点？", opts: ["自我中心", "不可逆性", "泛灵论", "不守恒"], ans: 0, exp: "“三山实验”证明前运算阶段儿童不能理解别人看到的和自己看到的不一样，即自我中心。" },
+      { q: "幼儿认为一切物体都有生命、有情感，这体现了思维的？", opts: ["自我中心", "泛灵论", "表面性", "经验性"], ans: 1, exp: "幼儿认为花草树木都可以和自己对话，认为所有物体都和自己一样具有生命，即泛灵论（拟人性）。" },
+      { q: "3岁幼儿知道5+3=8，却不知道3+5等于多少，这体现了思维具有？", opts: ["不可逆性", "自我中心", "泛灵论", "守恒"], ans: 0, exp: "幼儿只能进行顺向思维，不能进行逆向思维，这是思维不可逆性的表现。" },
+      { q: "前运算阶段儿童过家家、假装打电话，这种游戏是？", opts: ["假装游戏（假扮游戏）", "规则游戏", "结构性游戏", "智力游戏"], ans: 0, exp: "前运算阶段儿童出现假装游戏（过家家），体现心理表征能力和符号思维。" },
+      { q: "幼儿处于前运算阶段时，下列哪项思维特点是不存在的？", opts: ["已获得守恒概念", "符号思维", "自我中心", "泛灵论"], ans: 0, exp: "前运算阶段幼儿尚未获得守恒概念，守恒是具体运算阶段（7-11岁）才具备的特点。" }
+    ]
+  },
+  { // 关卡四：概念·判断·推理的发展
+    name: "概念·推理",
+    questions: [
+      { q: "幼儿初期（3-4岁）掌握概念主要依靠？", opts: ["生活中出现的原型", "词语定义", "概念本质属性", "抽象推理"], ans: 0, exp: "幼儿初期对概念的理解借助生活中出现的原型，如对“狗”的理解基于生活中真实的狗。" },
+      { q: "幼儿中期（4-5岁）对概念的理解特点是？", opts: ["能列举概念的一些属性，但不一定是本质属性", "已理解本质属性", "只靠原型", "完全抽象"], ans: 0, exp: "幼儿中期能列举概念的一些属性（如“狗有四条腿”“狗能汪汪叫”），但不一定是本质属性。" },
+      { q: "幼儿晚期（5-6、7岁）对概念的理解特点是？", opts: ["理解概念的本质属性和功用属性", "只能靠原型", "只列举非本质属性", "无法理解"], ans: 0, exp: "幼儿晚期能理解概念的本质属性（如“狗是动物”），并关注功用属性（如“狗会看家”）。" },
+      { q: "幼儿数概念发展的第一阶段（2-3岁）的特点是？", opts: ["唱数一般不超过5、对数量笼统感知", "能进行20以内加减", "建立数词与物体数量联系", "理解数量守恒"], ans: 0, exp: "2-3岁幼儿对数量有笼统感知，唱数一般不超过5，会小范围地点数。" },
+      { q: "幼儿的判断和推理常常依据什么进行？", opts: ["外部特征、权威或自己的经验", "内在本质和逻辑关系", "抽象推理", "科学论证"], ans: 0, exp: "幼儿判断推理常基于事物外部特征、权威（“这是爸爸说的”）或自己的经验，不太成熟。" }
+    ]
+  },
+  { // 关卡五：培养婴幼儿的思维
+    name: "思维培养",
+    questions: [
+      { q: "培养婴幼儿思维，首先应多创设什么机会？", opts: ["直接感知和动手操作的机会", "背诵记忆的机会", "安静听讲的机会", "独自玩耍的机会"], ans: 0, exp: "幼儿只有通过对物体的直接感知和操作，才能积累实际经验并从中获得学习机会。" },
+      { q: "在教学活动中，为引导幼儿学习应怎样做？", opts: ["创设问题情境，引发幼儿积极思考", "直接给出答案", "禁止提问", "只讲不练"], ans: 0, exp: "应创设问题情境引导幼儿学习，抓住幼儿自发产生的问题引发进一步思考。" },
+      { q: "为把无形的概念以有形形式表现，教“什么是风”时最好？", opts: ["做个小纸片让幼儿看到风吹动纸片", "让幼儿背诵定义", "画一幅风的画", "放一段录音"], ans: 0, exp: "教抽象概念时尽量用实物，做小纸片让幼儿看到风引起纸片运动，把无形概念以有形形式表现。" },
+      { q: "在培养幼儿思维时，也要注意培养什么？", opts: ["创造力", "机械记忆", "安静听话", "死记硬背"], ans: 0, exp: "幼儿想象丰富，培养思维能力时也要注意创造力培养，不要急于让幼儿“知道正确答案”而压抑想象。" },
+      { q: "为促进幼儿思维、语言、社会性发展，什么对幼儿有重要作用？", opts: ["游戏", "罚站", "批评", "禁止活动"], ans: 0, exp: "游戏对幼儿思维、语言、社会性发展都有重要作用，在游戏中幼儿练习语言、运用思维进行想象、解决问题。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是思维知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

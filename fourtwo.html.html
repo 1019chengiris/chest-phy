@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四章第二节《记忆》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧠 记忆 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第四章第二节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>记忆概述</div>
+    <div class="level-dot" id="lv2">关卡二<br>记忆种类</div>
+    <div class="level-dot" id="lv3">关卡三<br>婴儿期记忆</div>
+    <div class="level-dot" id="lv4">关卡四<br>幼儿期记忆</div>
+    <div class="level-dot" id="lv5">关卡五<br>记忆力培养</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：记忆概述
+    name: "记忆概述",
+    questions: [
+      { q: "记忆是人脑对于经历过的事物的一种心理反应，其基本环节包括？", opts: ["识记、保持、再认或回忆", "感觉、知觉、思维", "编码、存储、提取", "输入、加工、输出"], ans: 0, exp: "记忆包括识记、保持、再认或回忆这几个基本环节。" },
+      { q: "艾宾浩斯遗忘曲线表明，遗忘的进程是？", opts: ["先快后慢", "先慢后快", "匀速进行", "没有规律"], ans: 0, exp: "艾宾浩斯遗忘曲线表明遗忘规律是最初遗忘速度很快，以后逐渐减慢。" },
+      { q: "关于记忆，下列说法正确的是？", opts: ["记忆中遗忘的信息是匀速丢失的", "遗忘遵循先快后慢的规律", "记忆是匀速不变的", "记忆没有遗忘"], ans: 1, exp: "记忆遗忘遵循艾宾浩斯遗忘曲线规律，即最初遗忘快、以后逐渐减慢。" },
+      { q: "我们大脑对所见所闻首先进行识记，然后保存，需要时再提取，这体现了记忆的什么性质？", opts: ["记忆是一个存储与提取信息的过程", "记忆是静止的", "记忆不需要保持", "记忆只包括识记"], ans: 0, exp: "记忆是先识记、再保存（保持）、在需要时再认或回忆（提取）的过程。" },
+      { q: "记忆在认知过程中的地位是？", opts: ["通过注意进入记忆，存储信息", "与注意无关", "只存储不加工", "只输出不存储"], ans: 0, exp: "感官接受外界刺激形成感知觉后，信息会通过注意进入记忆。" }
+    ]
+  },
+  { // 关卡二：记忆的种类
+    name: "记忆种类",
+    questions: [
+      { q: "记住一种糖果的味道，属于？", opts: ["形象记忆", "情绪记忆", "运动记忆", "语词逻辑记忆"], ans: 0, exp: "形象记忆是将事物形象存放于大脑，如记住颜色、形状、气味、味道等。" },
+      { q: "记住自己某次郊游很开心，但忘了为什么开心，这属于？", opts: ["形象记忆", "情绪记忆", "运动记忆", "语词逻辑记忆"], ans: 1, exp: "情绪记忆是以情绪体验为内容的记忆，情绪记忆往往保持长久。" },
+      { q: "一旦学会游泳，多年后也不会忘记动作，这属于？", opts: ["形象记忆", "情绪记忆", "运动记忆", "语词逻辑记忆"], ans: 2, exp: "运动记忆是关于身体动作的记忆，如学会游泳后多年不忘。" },
+      { q: "短时记忆的容量大约是？", opts: ["5±2个组块", "7±2个组块", "9±2个组块", "无限"], ans: 1, exp: "短时记忆的容量有限，约为7±2个组块。" },
+      { q: "信息保持时间大约为0.25-2秒的记忆是？", opts: ["瞬时记忆", "短时记忆", "长时记忆", "工作记忆"], ans: 0, exp: "瞬时记忆保持时间约0.25-2秒，是记忆系统的第一阶段。" }
+    ]
+  },
+  { // 关卡三：婴儿期记忆的发展
+    name: "婴儿期记忆",
+    questions: [
+      { q: "婴儿记忆能力的主要表现方式是什么？", opts: ["再认", "回忆", "背诵", "复述"], ans: 0, exp: "再认比回忆简单，因而再认成为婴儿记忆能力的主要表现方式。" },
+      { q: "婴儿在什么时候表现出再认能力？", opts: ["新生儿时期", "3个月", "6个月", "1岁"], ans: 0, exp: "婴儿在新生儿时期就表现出再认能力，但此时再认非常粗略、保持时间短。" },
+      { q: "回忆能力大约在婴儿什么时候有所表现？", opts: ["3个月", "5个月", "7个月", "1岁"], ans: 2, exp: "回忆能力大约在婴儿7个月时才有所表现，此时婴儿能寻找从视野中消失的物体。" },
+      { q: "婴儿什么时候能表现出对熟悉东西的长时记忆？", opts: ["3个月", "6个月", "1岁左右", "2岁"], ans: 2, exp: "到1岁左右，婴儿就能表现出对熟悉东西的长时记忆，并在很久以后能回忆出来。" },
+      { q: "婴儿期记忆的特点是？", opts: ["以无意记忆为主", "以有意记忆为主", "以机械记忆为主", "以理解记忆为主"], ans: 0, exp: "婴儿期以无意记忆为主，记忆多是无意识、无目的的。" }
+    ]
+  },
+  { // 关卡四：幼儿期记忆的发展
+    name: "幼儿期记忆",
+    questions: [
+      { q: "整个幼儿时期，无意记忆与有意记忆的效果相比？", opts: ["无意记忆的效果要好于有意记忆", "有意记忆更好", "两者一样", "无法比较"], ans: 0, exp: "整个幼儿时期，无意记忆的效果都要好于有意记忆。" },
+      { q: "幼儿唱歌时把歌词唱成近音的其他字，这体现了幼儿的？", opts: ["机械记忆", "理解记忆", "形象记忆", "有意记忆"], ans: 0, exp: "幼儿根据听到的发音机械记忆歌词，并不理解原意，体现了机械记忆。" },
+      { q: "幼儿记住具体、直观、形象的东西更容易，这体现了幼儿的？", opts: ["形象记忆优于语词逻辑记忆", "语词记忆优于形象记忆", "机械记忆优于理解记忆", "两者无差别"], ans: 0, exp: "幼儿的形象记忆好于语词逻辑记忆，更容易记住具体直观形象的东西。" },
+      { q: "幼儿记忆策略大约在几岁以后开始萌芽？", opts: ["3岁", "4岁", "5岁", "6岁"], ans: 2, exp: "幼儿在5岁以前几乎不会使用策略帮助记忆，5岁以后才开始慢慢使用部分策略。" },
+      { q: "幼儿使用的记忆策略主要有？", opts: ["视觉复述策略和定位策略", "复述策略和精细加工", "组织策略和分类策略", "只靠死记硬背"], ans: 0, exp: "幼儿使用的记忆策略主要有视觉复述策略和定位策略。" }
+    ]
+  },
+  { // 关卡五：婴幼儿记忆力的培养
+    name: "记忆力培养",
+    questions: [
+      { q: "培养婴幼儿记忆力时，应尊重什么？", opts: ["个别差异", "统一标准", "机械重复", "成人偏好"], ans: 0, exp: "培养记忆力首先应尊重个别差异，不强求所有孩子一样。" },
+      { q: "重视大脑工作状态意味着？", opts: ["注意劳逸结合、保证良好作息", "拼命加压", "越疲劳越有效", "忽略休息"], ans: 0, exp: "要重视大脑工作状态，注意劳逸结合，保证良好作息。" },
+      { q: "培养记忆力时，教学内容应该？", opts: ["具体生动、富有感情色彩", "抽象枯燥", "机械重复", "单调乏味"], ans: 0, exp: "教学内容要具体生动、富有感情色彩，利于幼儿记忆。" },
+      { q: "为提高幼儿记忆力，应帮助幼儿？", opts: ["理解材料，提高有意识记水平", "死记硬背", "只记不忆", "机械重复"], ans: 0, exp: "要帮助幼儿理解识记材料，提高有意识记水平，而非机械死背。" },
+      { q: "对幼儿识记结果的评价应当？", opts: ["正确及时，记对了表扬、记错了纠正不责备", "只要批评", "只要表扬", "不评价"], ans: 0, exp: "要正确及时评价识记结果，记对了及时表扬，记错了纠正但不责备惩罚。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是记忆知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

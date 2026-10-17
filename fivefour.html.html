@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章第四节《社会交往》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🤝 社会交往 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第五章第四节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>亲子依恋</div>
+    <div class="level-dot" id="lv2">关卡二<br>依恋发展·类型</div>
+    <div class="level-dot" id="lv3">关卡三<br>依恋与教育</div>
+    <div class="level-dot" id="lv4">关卡四<br>同伴交往</div>
+    <div class="level-dot" id="lv5">关卡五<br>师幼关系</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：亲子依恋
+    name: "亲子依恋",
+    questions: [
+      { q: "依恋是指什么？", opts: ["儿童与主要抚养者之间建立的强烈、持久、亲密的情感联系", "儿童与老师的关系", "儿童与玩具的关系", "儿童与自己身体的关系"], ans: 0, exp: "依恋是指儿童与主要抚养者之间建立起来的强烈、持久、亲密的情感联系，是儿童生活早期最重要的社会关系。" },
+      { q: "依恋是婴儿最早建立的人际间情感联系，也是儿童生活早期最重要的什么？", opts: ["社会关系", "生理需要", "认知能力", "语言能力"], ans: 0, exp: "依恋是婴儿最早建立的人际间情感联系，是儿童生活早期最重要的社会关系。" },
+      { q: "依恋的第一个特点是？", opts: ["寻求与依恋对象身体上的亲近", "独立自主", "排斥亲密接触", "回避依恋对象"], ans: 0, exp: "依恋特点一是寻求与依恋对象身体上的亲近。" },
+      { q: "依恋遭到破坏后会怎么样？", opts: ["对儿童没有任何影响", "造成依恋者情感上的痛苦", "让儿童更独立", "让儿童更快乐"], ans: 1, exp: "依恋特点三：依恋遭到破坏后，会造成依恋者情感上的痛苦。" },
+      { q: "依恋的特点不包括下列哪一项？", opts: ["寻求身体上的亲近", "可从依恋者那里获得安全感和慰藉", "依恋遭破坏会带来情感痛苦", "依恋只针对母亲一人"], ans: 3, exp: "依恋主要针对主要抚养者，不一定是母亲一人，故“只针对母亲一人”不属于依恋特点。" }
+    ]
+  },
+  { // 关卡二：依恋的发展与类型
+    name: "依恋发展·类型",
+    questions: [
+      { q: "依恋发展的第一阶段是？", opts: ["无分化的社会反应阶段（0—3个月）", "分化的社会反应阶段（3—6个月）", "依恋关系明确期（6个月—2岁）", "目标调整的伙伴关系阶段（2岁以后）"], ans: 0, exp: "依恋发展四阶段：无分化(0-3月)、分化(3-6月)、依恋明确(6月-2岁)、目标调整(2岁以后)。" },
+      { q: "婴儿在哪个阶段开始表现出分离焦虑？", opts: ["无分化的社会反应阶段", "分化的社会反应阶段", "依恋关系明确期", "目标调整的伙伴关系阶段"], ans: 2, exp: "依恋关系明确期（6个月—2岁），婴儿与特定对象确立依恋关系，开始表现出分离焦虑。" },
+      { q: "玛丽·安斯沃思根据婴儿在陌生情境中的行为反应将依恋类型分为几类？", opts: ["两类", "三类", "四类", "五类"], ans: 1, exp: "安斯沃思将依恋类型区分为三类：安全型依恋、回避型依恋、矛盾型依恋。" },
+      { q: "在陌生情境中，婴儿敢于主动探索，与母亲有亲密接触，母亲离开时痛苦不安，这种依恋类型是？", opts: ["安全型依恋", "回避型依恋", "矛盾型依恋", "混乱型依恋"], ans: 0, exp: "安全型依恋的婴儿把母亲视为安全基地，敢于探索，母亲离开时痛苦，母亲回来时亲近并安下心来。" },
+      { q: "在社会性发展方面，哪类依恋的儿童具有更强的社会适应能力和社会交往技能？", opts: ["安全型依恋", "回避型依恋", "矛盾型依恋", "三类一样"], ans: 0, exp: "安全依恋的儿童具有更强的社会适应能力和社会交往技能。" }
+    ]
+  },
+  { // 关卡三：亲子依恋的教育
+    name: "依恋与教育",
+    questions: [
+      { q: "影响依恋形成的因素包括（可多选，选出最全面的一项）？", opts: ["抚养者的敏感性、抚养质量、儿童自身特点、家庭环境", "只有遗传", "只有母亲是否上班", "只有是否母乳喂养"], ans: 0, exp: "依恋的形成受抚养者的敏感性、抚养质量、儿童自身特点及家庭环境等多方面因素影响。" },
+      { q: "要建立良好的亲子依恋关系，首要策略是？", opts: ["让孩子一出生就与母亲在一起，敏感期给予温暖、负责的照料", "尽快送托儿所", "让不同人轮流照看", "严格训练孩子独立"], ans: 0, exp: "建立良好亲子依恋关系策略之一：让孩子一出生就和母亲在一起，在敏感期给予温暖、负责的照料。" },
+      { q: "关于保持稳定的抚养关系，正确做法是？", opts: ["经常更换主要抚养者", "主要抚养者不要经常更换", "突然更换抚养者", "由陌生人不适应即更换"], ans: 1, exp: "要保持相对稳定的抚养关系，主要抚养者不要经常更换，尤其不要突然更换而不给孩子适应过程。" },
+      { q: "父母对孩子发出的信号应怎样？", opts: ["敏感并及时、恰当反馈", "不予回应", "延迟很久再回应", "只回应一部分"], ans: 0, exp: "父母要对孩子发出的信号敏感，能做出及时、恰当的反馈，常关心孩子，了解其愿望和需求。" },
+      { q: "关于家庭不同成员养育方式，正确的是？", opts: ["各管各的、随意变化", "尽量保持一致和连贯，不要经常变化", "越严格越好", "越放任越好"], ans: 1, exp: "家庭中不同成员的养育方式要尽量保持一致和连贯，否则儿童会很难调整行为从而导致不安全依恋。" }
+    ]
+  },
+  { // 关卡四：同伴交往
+    name: "同伴交往",
+    questions: [
+      { q: "同伴交往的作用不包括下列哪项？", opts: ["提供社会比较的参照标准", "提供模仿的榜样", "有助于积极情感发展", "取代亲子关系"], ans: 3, exp: "同伴交往提供社会比较参照、模仿榜样、促进积极情感，但不能取代亲子关系。" },
+      { q: "同伴交往发展阶段中，物体中心阶段（6—12个月）的交往以什么为媒介？", opts: ["物品和玩具", "语言对话", "肢体游戏", "合作任务"], ans: 0, exp: "物体中心阶段交往以物品和玩具为媒介，注意力指向物体而非交往对象。" },
+      { q: "1—1.5岁属于同伴交往的哪个阶段？", opts: ["物体中心阶段", "简单交往阶段", "互补交往阶段", "合作游戏阶段"], ans: 1, exp: "简单交往阶段(1-1.5岁)，婴幼儿开始对同伴行为做出反应，并试图支配对方行为。" },
+      { q: "在同伴交往中积极友好、主动性强，通常有较高社交地位的幼儿属于？", opts: ["受欢迎型", "被拒绝型", "被忽视型", "一般型"], ans: 0, exp: "受欢迎型幼儿长相较好、讲卫生、交往中积极友好主动，社交地位高，属于群体中的领导或支配性人物。" },
+      { q: "同伴交往类型中的被忽视型幼儿的特点是？", opts: ["较为慢热、缺乏主动性、不善于主动建立关系", "积极但易冲动", "受部分人喜欢", "社交技能强"], ans: 0, exp: "被忽视型幼儿较为慢热、交往中缺乏主动性，正向和负向提名都很少，处于被忽视地位。" }
+    ]
+  },
+  { // 关卡五：师幼关系
+    name: "师幼关系",
+    questions: [
+      { q: "师幼关系是指？", opts: ["幼儿在幼儿园中与教师形成的以情感、认知和行为交往为主要表现形式的人际关系", "幼儿与父母的关系", "幼儿与同伴的关系", "幼儿与玩具的关系"], ans: 0, exp: "师幼关系是幼儿在幼儿园中与教师形成的以情感、认知和行为交往为主要表现形式的人际关系。" },
+      { q: "师幼关系从本质上来讲是一种事务性关系，但同时带有明显的什么特征？", opts: ["情感性", "生理性", "强制性", "单向性"], ans: 0, exp: "师幼关系从本质上来讲是一种事务性关系，但同时又带有明显的情感性特征。" },
+      { q: "下列哪项属于师幼关系的类型？", opts: ["严厉型、灌输型、开放学习型、民主型", "安全型、回避型", "受欢迎型、被拒绝型", "活泼型、抑制型"], ans: 0, exp: "师幼关系类型包括严厉型、灌输型、开放学习型、民主型。" },
+      { q: "影响师幼和谐关系的因素不包括下列哪项？", opts: ["教师的儿童观和教育观", "幼儿自身的特征（性别、外貌、气质）", "教师与家长的关系", "幼儿园的硬件设备"], ans: 3, exp: "影响师幼和谐关系因素有教师儿童观、幼儿自身特征、教师与家长关系，不包括幼儿园硬件设备。" },
+      { q: "建立良好师幼关系，教师应持有的观念是？", opts: ["把幼儿当作有独立人格的人，尊重幼儿、平等对话", "师道尊严、幼儿听命于成人", "严师出高徒", "幼儿是被动接受者"], ans: 0, exp: "教师应树立正确儿童观与教育观，把幼儿当作有独立人格的人，尊重幼儿、平等对话，帮助幼儿建立安全感和归属感。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是社会交往知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

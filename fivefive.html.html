@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章第五节《亲社会行为与攻击行为》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>💛 亲社会与攻击行为 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第五章第五节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>亲社会行为</div>
+    <div class="level-dot" id="lv2">关卡二<br>发展·培养</div>
+    <div class="level-dot" id="lv3">关卡三<br>攻击行为</div>
+    <div class="level-dot" id="lv4">关卡四<br>攻击发展</div>
+    <div class="level-dot" id="lv5">关卡五<br>攻击矫正</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：亲社会行为
+    name: "亲社会行为",
+    questions: [
+      { q: "亲社会行为是指什么？", opts: ["一个人帮助或打算帮助他人或群体的行为及倾向", "伤害他人的行为", "获取利益的行为", "攻击行为"], ans: 0, exp: "亲社会行为是指一个人帮助或打算帮助他人或群体的行为及倾向。" },
+      { q: "幼儿阶段的亲社会行为主要表现为？", opts: ["分享、合作、谦让、互助", "抢玩具、推人、打人", "独占、拒绝、攻击", "抢夺、辱骂"], ans: 0, exp: "亲社会行为在幼儿阶段主要表现为分享、合作、谦让、互助等行为。" },
+      { q: "亲社会行为不一定是利他的，下列哪种情况也属于亲社会行为？", opts: ["幼儿为了得到奖励而选择去帮助别人", "被迫帮助别人", "只想伤害别人", "完全无意的行为"], ans: 0, exp: "幼儿为了得到奖励而选择去帮助别人也属于亲社会行为，亲社会行为不一定是利他的。" },
+      { q: "亲社会行为是社会性发展的什么？", opts: ["重要指标", "无关因素", "唯一指标", "障碍"], ans: 0, exp: "亲社会行为是社会性发展的重要指标，也是儿童社会化的结果。" },
+      { q: "亲社会行为的发展随年龄增长呈现什么趋势？", opts: ["更丰富且可自发表现", "逐渐减少", "保持不变", "完全消失"], ans: 0, exp: "亲社会行为随年龄增长其发展更丰富，且能自发表现，受认知、移情、环境与文化的综合影响。" }
+    ]
+  },
+  { // 关卡二：亲社会行为的发展与培养
+    name: "发展·培养",
+    questions: [
+      { q: "亲社会行为的发展受什么影响？", opts: ["认知、移情、环境与文化", "只有遗传", "只有家庭", "只有学校教育"], ans: 0, exp: "亲社会行为受认知、移情、环境与文化的综合影响。" },
+      { q: "下列哪项属于培养亲社会行为的方法？", opts: ["提供亲社会榜样、移情训练、创设实践机会、及时强化", "惩罚攻击行为", "减少社交", "鼓励独占"], ans: 0, exp: "培养亲社会行为的方法包括提供榜样、移情训练、创设实践机会及及时强化。" },
+      { q: "移情训练旨在提高幼儿什么能力？", opts: ["善于体察他人情绪、理解他人情感并产生共鸣的能力", "攻击能力", "记忆能力", "语言能力"], ans: 0, exp: "移情训练旨在提高幼儿善于体察他人情绪、理解他人情感并能产生共鸣的能力。" },
+      { q: "创设实践条件和机会的目的是？", opts: ["引导幼儿在实践中表现合作、谦让、共享等良好行为", "增加竞争", "孤立幼儿", "减少活动"], ans: 0, exp: "父母和教师要利用学习游戏活动，引导幼儿在实践中表现合作、谦让、共享等良好行为。" },
+      { q: "幼儿一旦出现利他行为，父母和教师应及时怎么做？", opts: ["强化，如表扬、奖励", "忽视", "批评", "惩罚"], ans: 0, exp: "幼儿出现利他行为时要及时强化如表扬奖励，否则习得的利他行为可能消退。精神奖励在巩固谦让行为中作用不可低估。" }
+    ]
+  },
+  { // 关卡三：攻击行为
+    name: "攻击行为",
+    questions: [
+      { q: "攻击行为是指什么？", opts: ["有意的直接或间接伤害他人或他物的行为", "无意的碰撞", "游戏中的推挤", "正常的身体接触"], ans: 0, exp: "攻击行为是有意地直接或间接伤害他人或他物的行为。" },
+      { q: "攻击行为从目的来看可以分为？", opts: ["敌意性攻击和工具性攻击", "身体攻击和言语攻击", "主动攻击和被动攻击", "生理攻击和心理攻击"], ans: 0, exp: "从目的看攻击行为分敌意性攻击和工具性攻击。" },
+      { q: "一个小男孩打一个小女孩是为了夺走她的玩具，这种攻击是？", opts: ["工具性攻击", "敌意性攻击", "身体攻击", "言语攻击"], ans: 0, exp: "工具性攻击是为了达到其他目的而去伤害别人，如为了夺走玩具而打人。" },
+      { q: "攻击行为从方式来看可以分为？", opts: ["身体动作攻击和语言攻击", "敌意性攻击和工具性攻击", "主动攻击和被动攻击", "个体攻击和群体攻击"], ans: 0, exp: "从方式看攻击行为分身体动作攻击和语言攻击。" },
+      { q: "言语威胁、辱骂、嘲笑、诽谤属于？", opts: ["语言攻击", "身体动作攻击", "工具性攻击", "敌意性攻击"], ans: 0, exp: "言语攻击是借助言语表达表现的攻击性行为，如威胁、辱骂、嘲笑、诽谤等。" }
+    ]
+  },
+  { // 关卡四：攻击行为的发展
+    name: "攻击发展",
+    questions: [
+      { q: "最早指向同伴的攻击行为大约在什么时候被观察到？", opts: ["1岁末", "3岁", "5岁", "6个月"], ans: 0, exp: "最早指向同伴的攻击行为大约在1岁末被观察到。" },
+      { q: "从2岁到6岁，幼儿表现的攻击行为大多数是？", opts: ["工具性的", "敌意性的", "言语攻击", "语言攻击"], ans: 0, exp: "从2岁到6岁幼儿攻击行为大多是工具性的，主要因争夺玩具、材料及游戏场地产生。" },
+      { q: "随着幼儿年龄增长，其身体攻击行为呈什么趋势？", opts: ["下降趋势", "上升趋势", "保持不变", "忽高忽低"], ans: 0, exp: "随着幼儿年龄增长，身体攻击行为呈下降趋势，这与言语技能提高和环境因素有关。" },
+      { q: "攻击行为的影响因素包括？", opts: ["生物因素、环境因素、强化、挫折、社会信息加工能力", "只有遗传", "只有媒体", "只有家庭"], ans: 0, exp: "攻击行为受生物因素、环境因素、强化、挫折和社会信息加工能力等多因素影响。" },
+      { q: "易烦躁、吵闹、注意力容易分散的婴幼儿往往？", opts: ["表现出更多的攻击行为", "攻击行为更少", "完全没有攻击行为", "攻击行为更温和"], ans: 0, exp: "易烦躁、吵闹、注意力容易分散的婴幼儿表现出更多的攻击行为。" }
+    ]
+  },
+  { // 关卡五：攻击行为的矫正
+    name: "攻击矫正",
+    questions: [
+      { q: "矫正攻击行为最简单有效的方法之一是？", opts: ["创造能将冲突最小化的环境", "加大惩罚", "减少活动", "关禁闭"], ans: 0, exp: "从游戏场所环境入手减少攻击行为最简单有效，即创造能将冲突最小化的环境。" },
+      { q: "为减少攻击行为，应尽量避免提供什么样的玩具？", opts: ["带有攻击意味的玩具（如枪、刀、剑）", "积木", "拼图", "绘本"], ans: 0, exp: "应少提供带有攻击意味的玩具，如枪、玩具刀、剑等。" },
+      { q: "幼儿玩耍时，父母或教师最好提供充足玩具是为了？", opts: ["避免他们因争夺资源而产生冲突", "增加竞争", "减少交往", "制造矛盾"], ans: 0, exp: "提供充足玩具可避免幼儿因争夺资源而产生冲突。" },
+      { q: "关于不去强化攻击行为，正确的做法是？", opts: ["孩子抢玩具打人后，把玩具拿来还给被抢者，让其意识到工具性攻击无效", "让孩子占有玩具", "忽略孩子打人", "奖励孩子"], ans: 0, exp: "孩子A霸占玩具打了妹妹，应把玩具还给妹妹，让A意识到工具性攻击没有效果，进而减少工具性攻击。" },
+      { q: "对于身体活动较为剧烈的游戏，应提供充足的空间，目的是？", opts: ["减少拥挤、冲撞等可能引发攻击行为的情况", "增加冲突", "减少活动", "分散注意力"], ans: 0, exp: "为剧烈游戏提供充足空间可减少拥挤、冲撞等可能引发攻击行为的情况。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是社会行为知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>
