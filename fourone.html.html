@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四章第一节《感知觉与注意》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>👀 感知觉与注意 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第四章第一节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>感知觉概述</div>
+    <div class="level-dot" id="lv2">关卡二<br>感知觉发展</div>
+    <div class="level-dot" id="lv3">关卡三<br>感知觉训练</div>
+    <div class="level-dot" id="lv4">关卡四<br>注意</div>
+    <div class="level-dot" id="lv5">关卡五<br>注意应用</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：感知觉概述
+    name: "感知觉概述",
+    questions: [
+      { q: "感觉是人对事物什么属性的反映？", opts: ["个别属性", "整体属性", "本质属性", "概括属性"], ans: 0, exp: "感觉是对直接作用于感官的事物个别属性的反映，如颜色、形状、气味等。" },
+      { q: "知觉是人对事物什么属性的反映？", opts: ["个别属性", "整体属性", "单一属性", "无关属性"], ans: 1, exp: "知觉是人脑对直接作用于感官的客观事物的各个部分属性的整体反映。" },
+      { q: "从明亮处进入暗室，起初看不清，过一会儿能看清，体现了感觉的？", opts: ["适应性", "对比性", "代偿性", "相互作用"], ans: 0, exp: "这是感觉的适应性，指感受性在刺激物持续作用下发生变化。" },
+      { q: "盲人的听觉和触觉往往更敏锐，体现了感觉的？", opts: ["适应性", "对比性", "代偿性", "相互作用"], ans: 2, exp: "这是感觉的代偿性，一种感觉受损后其他感觉会增强来补偿。" },
+      { q: "即使小狗从远处跑近，视网膜上投影变大，我们仍觉得它大小没变，体现了知觉的？", opts: ["选择性", "整体性", "理解性", "恒常性"], ans: 3, exp: "知觉条件变化而印象保持不变，这是知觉的恒常性。" }
+    ]
+  },
+  { // 关卡二：婴幼儿感知觉的发生发展
+    name: "感知觉发展",
+    questions: [
+      { q: "证明婴儿已具备深度知觉的实验是？", opts: ["视崖实验", "三山实验", "守恒实验", "陌生情境实验"], ans: 0, exp: "视崖实验证明婴儿已具备深度知觉（深度或距离知觉）。" },
+      { q: "婴幼儿视觉发展中，几岁是辨别颜色的转折点？", opts: ["3岁", "4岁", "5岁", "6岁"], ans: 2, exp: "5岁是辨别颜色能力的转折点，女孩在颜色辨别能力上比男孩稍好。" },
+      { q: "胎儿大约几个月时就开始建立听觉系统？", opts: ["两三个月", "五六个月", "七八个月", "九个月"], ans: 1, exp: "胎儿大约五六个月的时候就已经开始建立听觉系统，听力对语言发展有关键作用。" },
+      { q: "空间知觉发展最快的时期是？", opts: ["0-2岁", "2-6岁", "6-8岁", "3-4岁"], ans: 1, exp: "空间知觉发展最快的时期是2-6岁，3岁后可较准确估计空间距离。" },
+      { q: "小班幼儿根据作息知道起床或睡觉时间，中班掌握昨天今天明天等概念，这属于？", opts: ["时间知觉", "空间知觉", "深度知觉", "形状知觉"], ans: 0, exp: "对客观现象延续性、顺序性和速度的觉知是时间知觉。" }
+    ]
+  },
+  { // 关卡三：训练感知觉与观察能力
+    name: "感知觉训练",
+    questions: [
+      { q: "培养婴幼儿视觉敏锐度，可以让婴儿练习？", opts: ["视觉追踪、看移动物体", "听声音", "闻气味", "尝味道"], ans: 0, exp: "培养视觉敏锐度可让婴儿练习视觉追踪、看移动物体等。" },
+      { q: "培养婴幼儿听觉，可以玩什么游戏？", opts: ["捉迷藏找声音源头、用乐器模仿声音", "视觉追踪", "摸不同材质", "闻不同气味"], ans: 0, exp: "培养听觉可玩捉迷藏寻找声音源头，或用乐器模仿动物声音让幼儿辨认。" },
+      { q: "针对感觉信息处理失调的干预方法是？", opts: ["感觉统合训练", "感官训练", "视觉追踪", "听觉训练"], ans: 0, exp: "感觉统合训练是针对感觉统合失调的干预方法，通过器械和游戏进行。" },
+      { q: "感觉统合训练的内容不包括下列哪项？", opts: ["大脑平衡功能训练、本体觉训练、触觉训练", "背诵训练", "平衡木、秋千", "跳床、滑板"], ans: 1, exp: "感觉统合训练包括大脑平衡功能训练、本体觉训练、触觉训练等，背诵不属于。" },
+      { q: "观察能力训练中，教师应怎么做？", opts: ["明确任务、指导方法", "让幼儿完全自由观察不加指导", "只让幼儿看", "不给任何引导"], ans: 0, exp: "观察能力训练需要教师明确任务、指导观察方法，而非放任自由。" }
+    ]
+  },
+  { // 关卡四：注意
+    name: "注意",
+    questions: [
+      { q: "注意是指心理活动对一定对象的？", opts: ["指向和集中", "反映和加工", "存储和提取", "选择和编码"], ans: 0, exp: "注意是心理活动对一定对象的指向和集中，有两个特点：指向性和集中性。" },
+      { q: "上课时聚精会神听讲，突然闯进一个人注意力不受控制地转移过去，这是？", opts: ["无意注意", "有意注意", "有意后注意", "分配注意"], ans: 0, exp: "没有预定目的、不需意志努力的注意是无意注意，如被突然闯入的人吸引。" },
+      { q: "上课时告诉自己要认真听讲、有意集中注意力，这是？", opts: ["无意注意", "有意注意", "无意后注意", "分散注意"], ans: 1, exp: "有意注意是有预定目的、需要一定意志努力的注意，如上课时告诉自己要集中注意力。" },
+      { q: "“一目十行”体现了注意的哪个品质？", opts: ["广度", "稳定性", "分配", "转移"], ans: 0, exp: "注意广度指同一时间能把握的对象数量，“一目十行”体现注意广度大。" },
+      { q: "一边唱歌一边搭积木，体现了注意的？", opts: ["广度", "稳定性", "分配", "转移"], ans: 2, exp: "注意分配指同一时间把注意分配到两种以上对象或活动上，如边唱边搭积木。" }
+    ]
+  },
+  { // 关卡五：注意的发展与应用
+    name: "注意应用",
+    questions: [
+      { q: "学前儿童注意发展的主要特点是？", opts: ["无意注意占优势、有意注意初步发展", "有意注意占优势", "两者都占优势", "两者都不占优势"], ans: 0, exp: "幼儿期无意注意占优势，有意注意开始迅速发展。" },
+      { q: "幼儿注意的稳定性特点是？", opts: ["稳定性差、容易分散", "稳定性很好、能长时间专注", "非常稳定", "完全不分散"], ans: 0, exp: "幼儿注意的稳定性差、容易分散，教师一堂课不宜过长。" },
+      { q: "幼儿园教师一堂课通常不超过20分钟，主要考虑了幼儿注意的什么特点？", opts: ["稳定性差", "广度窄", "分配难", "转移慢"], ans: 0, exp: "考虑到幼儿注意稳定性差的特点，教学活动时间不宜过长。" },
+      { q: "应用注意规律设计教学，下列做法不恰当的是？", opts: ["要求幼儿一直保持高度集中的有意注意", "控制教学时间", "利用新颖生动教具引起无意注意", "调动多感官参与"], ans: 0, exp: "不能要求幼儿一直保持有意注意，“收”和“放”要有平衡，需穿插自由活动。" },
+      { q: "关于有意注意与无意注意的平衡，正确说法是？", opts: ["有目的任务中穿插自由活动，平衡“收”与“放”", "全程强制有意注意", "全程放任", "只培养有意注意"], ans: 0, exp: "有意注意需要约束易疲劳，自由活动可放松，教师应引导两者交替平衡。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是感知觉知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>
