@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学前儿童发展心理学｜第一章绪论 在线练习题</title>
+    <style>
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei",system-ui,sans‑serif;
+        }
+        body{
+            background:#f3f4f6;
+            padding:24px 16px;
+        }
+        .wrap{
+            max-width:840px;
+            margin:0 auto;
+            background:#fff;
+            border-radius:14px;
+            padding:32px;
+            box-shadow:0 2px 12px rgba(0,0,0,0.08);
+        }
+        h1{
+            text-align:center;
+            color:#1f2937;
+            margin-bottom:8px;
+            font-size:24px;
+        }
+        .subtitle{
+            text-align:center;
+            color:#6b7280;
+            margin-bottom:20px;
+        }
+        .score-box{
+            background:#dbeafe;
+            padding:14px;
+            border-radius:10px;
+            text-align:center;
+            font-size:18px;
+            margin-bottom:24px;
+        }
+        .section-title{
+            font-size:18px;
+            font-weight:bold;
+            margin:30px 0 16px;
+            color:#2563eb;
+            border-left:4px solid #2563eb;
+            padding-left:10px;
+        }
+        .q-item{
+            margin-bottom:24px;
+            padding-bottom:16px;
+            border-bottom:1px solid #eee;
+        }
+        .q-title{
+            margin-bottom:10px;
+            line-height:1.6;
+        }
+        .opt-item{
+            margin:7px 0;
+            cursor:pointer;
+        }
+        .answer-area{
+            margin-top:10px;
+            padding:10px 12px;
+            background:#ecfdf5;
+            border-radius:8px;
+            color:#065f46;
+            display:none;
+        }
+        .q-btn-row{
+            margin-top:10px;
+        }
+        .btn-box{
+            margin:32px 0 10px;
+            display:flex;
+            gap:14px;
+            flex-wrap:wrap;
+            justify-content:center;
+        }
+        button{
+            padding:10px 20px;
+            border:none;
+            border-radius:8px;
+            font-size:15px;
+            cursor:pointer;
+        }
+        .btn-ans{
+            background:#10b981;
+            color:#fff;
+        }
+        #submitBtn{
+            background:#2563eb;
+            color:#fff;
+        }
+        #resetAll{
+            background:#6b7280;
+            color:#fff;
+        }
+        textarea{
+            width:100%;
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:6px;
+            min-height:100px;
+            margin:8px 0;
+            font-size:15px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>学前儿童发展心理学</h1>
+    <div class="subtitle">第一章 绪论 在线练习</div>
+
+    <div class="score-box">
+        得分：<span id="showScore">0</span> / <span id="totalPoint">18</span> 分
+    </div>
+
+    <div class="btn-box">
+        <button id="submitBtn">📝 交卷批改</button>
+        <button id="resetAll">🔄 重置全部</button>
+    </div>
+
+    <!-- 单项选择题 每题1分，共8题 -->
+    <div class="section-title">一、单项选择题（每题1分，共8分）</div>
+
+    <div class="q-item" data-type="radio" data-key="A">
+        <div class="q-title">1.个性心理特征不包括（）</div>
+        <div class="opt-item"><label><input type="radio" name="q1" value="A"> A.需要</label></div>
+        <div class="opt-item"><label><input type="radio" name="q1" value="B"> B.能力</label></div>
+        <div class="opt-item"><label><input type="radio" name="q1" value="C"> C.气质</label></div>
+        <div class="opt-item"><label><input type="radio" name="q1" value="D"> D.性格</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：A<br>解析：个性心理特征包含能力、气质、性格；需要属于个性倾向性。</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="B">
+        <div class="q-title">2.学前儿童心理学的研究对象是（）年龄范围内的儿童心理的发展规律。</div>
+        <div class="opt-item"><label><input type="radio" name="q2" value="A"> A.0‑3岁</label></div>
+        <div class="opt-item"><label><input type="radio" name="q2" value="B"> B.0‑6岁</label></div>
+        <div class="opt-item"><label><input type="radio" name="q2" value="C"> C.0‑12岁</label></div>
+        <div class="opt-item"><label><input type="radio" name="q2" value="D"> D.0‑18岁</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：B</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="C">
+        <div class="q-title">3.下列关于需要和动机的表述，不正确的是（）</div>
+        <div class="opt-item"><label><input type="radio" name="q3" value="A"> A.需要是人脑对生理和社会的要求的反映</label></div>
+        <div class="opt-item"><label><input type="radio" name="q3" value="B"> B.需要必须有诱因条件才能转化为动机</label></div>
+        <div class="opt-item"><label><input type="radio" name="q3" value="C"> C.需要一旦产生，就转化成为推动人活动的动力</label></div>
+        <div class="opt-item"><label><input type="radio" name="q3" value="D"> D.动机是在需要刺激下直接推动人进行活动的动力</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：C<br>解析：需要不一定直接变成动机，需要加上诱因，才形成动机。</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="B">
+        <div class="q-title">4.学前时期一般是指（）</div>
+        <div class="opt-item"><label><input type="radio" name="q4" value="A"> A.0‑3岁</label></div>
+        <div class="opt-item"><label><input type="radio" name="q4" value="B"> B.0‑6岁</label></div>
+        <div class="opt-item"><label><input type="radio" name="q4" value="C"> C.0‑16岁</label></div>
+        <div class="opt-item"><label><input type="radio" name="q4" value="D"> D.0‑18岁</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：B</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="A">
+        <div class="q-title">5.发展心理学是____的分支之一。</div>
+        <div class="opt-item"><label><input type="radio" name="q5" value="A"> A.基础心理学</label></div>
+        <div class="opt-item"><label><input type="radio" name="q5" value="B"> B.应用心理学</label></div>
+        <div class="opt-item"><label><input type="radio" name="q5" value="C"> C.比较心理学</label></div>
+        <div class="opt-item"><label><input type="radio" name="q5" value="D"> D.民族心理学</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：A</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="C">
+        <div class="q-title">6.学前儿童发展心理学是____的重要组成部分。</div>
+        <div class="opt-item"><label><input type="radio" name="q6" value="A"> A.基础心理学</label></div>
+        <div class="opt-item"><label><input type="radio" name="q6" value="B"> B.应用心理学</label></div>
+        <div class="opt-item"><label><input type="radio" name="q6" value="C"> C.个体发展心理学</label></div>
+        <div class="opt-item"><label><input type="radio" name="q6" value="D"> D.比较心理学</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：C</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="C">
+        <div class="q-title">7.根据我国现时通行的儿童心理发展阶段的划分，3‑4岁儿童属于（）</div>
+        <div class="opt-item"><label><input type="radio" name="q7" value="A"> A.先学前期</label></div>
+        <div class="opt-item"><label><input type="radio" name="q7" value="B"> B.幼儿中期</label></div>
+        <div class="opt-item"><label><input type="radio" name="q7" value="C"> C.幼儿初期</label></div>
+        <div class="opt-item"><label><input type="radio" name="q7" value="D"> D.幼儿晚期</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：C<br>解析：3‑4岁幼儿初期；4‑5幼儿中期；5‑6幼儿晚期。</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="A">
+        <div class="q-title">8."看见""听到""想象""思考"等是（）</div>
+        <div class="opt-item"><label><input type="radio" name="q8" value="A"> A.心理过程</label></div>
+        <div class="opt-item"><label><input type="radio" name="q8" value="B"> B.心理状态</label></div>
+        <div class="opt-item"><label><input type="radio" name="q8" value="C"> C.个性特征</label></div>
+        <div class="opt-item"><label><input type="radio" name="q8" value="D"> D.能力倾向</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：A<br>解析：属于认识过程，认识过程是心理过程的一部分。</div>
+    </div>
+
+
+    <!-- 多项选择题 每题2分，共5题 -->
+    <div class="section-title">二、多项选择题（每题2分，共10分，多选少选均不得分）</div>
+
+    <div class="q-item" data-type="checkbox" data-key="ABC">
+        <div class="q-title">1."学前儿童"这一概念具有广义和狭义之分，广义的学前儿童包含（）</div>
+        <div class="opt-item"><label><input type="checkbox" name="mq1" value="A"> A.胎儿期(从胚胎开始直至出生阶段)</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq1" value="B"> B.婴幼儿期</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq1" value="C"> C.幼儿期</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq1" value="D"> D.青少年时期</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：ABC</div>
+    </div>
+
+    <div class="q-item" data-type="checkbox" data-key="ABC">
+        <div class="q-title">2.心理现象划分为____几个方面。</div>
+        <div class="opt-item"><label><input type="checkbox" name="mq2" value="A"> A.动机</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq2" value="B"> B.心理过程</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq2" value="C"> C.个性</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq2" value="D"> D.意志过程</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：ABC<br>解析：心理现象分：动机、心理过程、个性；意志属于心理过程下子项。</div>
+    </div>
+
+    <div class="q-item" data-type="checkbox" data-key="ABC">
+        <div class="q-title">3.人的个性心理特征包括（）</div>
+        <div class="opt-item"><label><input type="checkbox" name="mq3" value="A"> A.能力</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq3" value="B"> B.气质</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq3" value="C"> C.性格</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq3" value="D"> D.兴趣</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：ABC<br>解析：兴趣属于个性倾向性。</div>
+    </div>
+
+    <div class="q-item" data-type="checkbox" data-key="ABD">
+        <div class="q-title">4.心理过程包括（）</div>
+        <div class="opt-item"><label><input type="checkbox" name="mq4" value="A"> A.认识过程</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq4" value="B"> B.情感过程</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq4" value="C"> C.个性</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq4" value="D"> D.意志过程</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：ABD</div>
+    </div>
+
+    <div class="q-item" data-type="checkbox" data-key="ABCD">
+        <div class="q-title">5.学前儿童发展心理学的研究内容主要集中在（）</div>
+        <div class="opt-item"><label><input type="checkbox" name="mq5" value="A"> A.描述学前儿童心理发展的普遍规律和特征</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq5" value="B"> B.揭示学前儿童心理发展的机制</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq5" value="C"> C.解释学前儿童心理发展的个体差异</label></div>
+        <div class="opt-item"><label><input type="checkbox" name="mq5" value="D"> D.探究学前儿童心理发展的影响因素</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：ABCD</div>
+    </div>
+
+
+    <!-- 判断题 每题1分，共5题 -->
+    <div class="section-title">三、判断题（正确A，错误B，每题1分，共5分）</div>
+
+    <div class="q-item" data-type="radio" data-key="A">
+        <div class="q-title">1.当人们遇到不喜欢的人时，心里会觉得不愉快，这是情感过程。</div>
+        <div class="opt-item"><label><input type="radio" name="t1" value="A"> A.正确</label></div>
+        <div class="opt-item"><label><input type="radio" name="t1" value="B"> B.错误</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：A</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="A">
+        <div class="q-title">2.阳光、空气、水和花草树木等是保证幼儿身心健康发展的自然环境因素。</div>
+        <div class="opt-item"><label><input type="radio" name="t2" value="A"> A.正确</label></div>
+        <div class="opt-item"><label><input type="radio" name="t2" value="B"> B.错误</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：A</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="B">
+        <div class="q-title">3.根据某些天气现象判断未来的天气，这是意志过程。</div>
+        <div class="opt-item"><label><input type="radio" name="t3" value="A"> A.正确</label></div>
+        <div class="opt-item"><label><input type="radio" name="t3" value="B"> B.错误</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：B<br>解析：这属于认识过程（思维）。</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="A">
+        <div class="q-title">4.凭借头脑中已经记下的物体形象，将其重新组合成新的形象，这个心理现象即想象。</div>
+        <div class="opt-item"><label><input type="radio" name="t4" value="A"> A.正确</label></div>
+        <div class="opt-item"><label><input type="radio" name="t4" value="B"> B.错误</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：A</div>
+    </div>
+
+    <div class="q-item" data-type="radio" data-key="B">
+        <div class="q-title">5.个性心理包括能力、气质和性格三方面。</div>
+        <div class="opt-item"><label><input type="radio" name="t5" value="A"> A.正确</label></div>
+        <div class="opt-item"><label><input type="radio" name="t5" value="B"> B.错误</label></div>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：B<br>解析：个性心理包括个性倾向性+个性心理特征；能力气质性格只是个性心理特征。</div>
+    </div>
+
+
+    <!-- 简答题 -->
+    <div class="section-title">四、简答题（主观题，不计入自动评分）</div>
+    <div class="q-item">
+        <div class="q-title">简述学前儿童发展心理学的主要研究内容。</div>
+        <textarea placeholder="请在这里写下你的答案……"></textarea>
+        <div class="q-btn-row"><button class="btn-ans">查看答案</button></div>
+        <div class="answer-area">参考答案：<br>1.描述学前儿童心理发展的普遍规律和特征；<br>2.揭示学前儿童心理发展的机制；<br>3.解释学前儿童心理发展的个体差异；<br>4.探究学前儿童心理发展的影响因素。</div>
+    </div>
+
+</div>
+
+<script>
+    //每题查看答案按钮
+    document.querySelectorAll(".btn-ans").forEach(btn=>{
+        btn.onclick = function(){
+            const ansDom = this.parentElement.nextElementSibling;
+            if(ansDom.style.display === "block"){
+                ansDom.style.display = "none";
+                this.innerText = "查看答案";
+            }else{
+                ansDom.style.display = "block";
+                this.innerText = "隐藏答案";
+            }
+        }
+    })
+
+    const submitBtn = document.querySelector("#submitBtn");
+    const resetBtn = document.querySelector("#resetAll");
+    const showScore = document.querySelector("#showScore");
+
+    //交卷批改自动计分
+    submitBtn.onclick = function(){
+        let score = 0;
+        //单选题目
+        const radioItems = document.querySelectorAll('.q-item[data-type="radio"]');
+        radioItems.forEach(item=>{
+            const correct = item.dataset.key;
+            const sel = item.querySelector('input[type="radio"]:checked');
+            if(sel && sel.value === correct){
+                score +=1;
+            }
+        })
+        //多选题目，每题2分，多选少选不得分
+        const checkItems = document.querySelectorAll('.q-item[data-type="checkbox"]');
+        checkItems.forEach(item=>{
+            const correctArr = item.dataset.key.split("");
+            const checked = Array.from(item.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
+            if(correctArr.sort().join("") === checked.sort().join("")){
+                score +=2;
+            }
+        })
+        showScore.innerText = score;
+        alert(`批改完成！你的得分：${score} / 18\n简答为主观题，需要老师人工批改。`);
+    }
+
+    //重置全部
+    resetBtn.onclick = function(){
+        document.querySelectorAll('input[type="radio"],input[type="checkbox"]').forEach(i=>{
+            i.checked = false;
+        })
+        document.querySelectorAll(".answer-area").forEach(el=>{
+            el.style.display = "none";
+        })
+        document.querySelectorAll(".btn-ans").forEach(b=>{
+            b.innerText = "查看答案";
+        })
+        document.querySelectorAll("textarea").forEach(ta=>{
+            ta.value = "";
+        })
+        showScore.innerText = "0";
+    }
+</script>
+</body>
+</html>

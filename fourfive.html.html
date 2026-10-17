@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四章第五节《语言》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🗣️ 语言 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第四章第五节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>语言概述</div>
+    <div class="level-dot" id="lv2">关卡二<br>前语言时期</div>
+    <div class="level-dot" id="lv3">关卡三<br>独词句·电报句</div>
+    <div class="level-dot" id="lv4">关卡四<br>2岁后发展</div>
+    <div class="level-dot" id="lv5">关卡五<br>语言培养</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：语言概述
+    name: "语言概述",
+    questions: [
+      { q: "语言是以什么为基本单位、以什么为构造规则的符号系统？", opts: ["以词为基本单位、以语法为构造规则", "以音节为基本单位", "以句子为基本单位", "以语音为基本单位"], ans: 0, exp: "语言是以词为基本单位、以语法为构造规则而组成的一种符号系统，具有社会性和生成性。" },
+      { q: "言语过程主要包括哪三个方面？", opts: ["言语感知、言语理解和言语表达", "言语发声、言语模仿、言语复述", "听、说、读、写", "词汇、语法、句子"], ans: 0, exp: "言语过程主要包括言语感知、言语理解和言语表达三个方面。" },
+      { q: "言语活动的首要环节、也是婴儿最早获得的言语能力是？", opts: ["言语感知", "言语理解", "言语表达", "言语模仿"], ans: 0, exp: "言语感知是通过对言语的感知获得信息的过程，是言语活动的首要环节，也是婴儿最早获得的言语能力。" },
+      { q: "认为语言是经过后天学习形成发展、环境作用首要是？", opts: ["经验论", "先成论", "交互论", "行为论"], ans: 0, exp: "经验论认为语言是经过后天学习形成发展的，环境或经验的作用是首要的。" },
+      { q: "认为0-3岁是语言学习最佳时期、人类有先天语言获得机制的是？", opts: ["先成论", "经验论", "交互论", "人本论"], ans: 0, exp: "先成论认为人类有先天语言获得机制，支持语言习得存在关键期，认为0-3岁是语言学习最佳时期。" }
+    ]
+  },
+  { // 关卡二：前语言时期（0-10/13个月）
+    name: "前语言时期",
+    questions: [
+      { q: "前语言时期的年龄段是？", opts: ["0-10个月或0-13个月", "13-18个月", "18-24个月", "2岁以后"], ans: 0, exp: "前语言时期为0-10个月或0-13个月，是语音准备阶段。" },
+      { q: "2-4个月被称为婴儿的？", opts: ["发音游戏期", "语音修正期", "学话萌芽期", "电报语言期"], ans: 0, exp: "2-4个月被称为“发音游戏期”，婴儿能区别并模仿成人语音。" },
+      { q: "5-8个月被称为婴儿的？", opts: ["语音修正期", "发音游戏期", "学话萌芽期", "独词句时期"], ans: 0, exp: "5-8个月是“语音修正期”，婴儿根据语言环境修正自己的语音体系。" },
+      { q: "9-12个月被称为婴儿的？", opts: ["学话萌芽期", "发音游戏期", "语音修正期", "电报语言期"], ans: 0, exp: "9-12个月是“学话萌芽期”，婴儿能辨别很多音素，语言发生的条件已经成熟。" },
+      { q: "婴儿真正说出有意义的词大约在？", opts: ["10-14个月", "2-4个月", "5-8个月", "18-24个月"], ans: 0, exp: "前语言时期婴儿真正说出有意义的词大约在10-14个月，这期间平均每个月可掌握1-3个新词。" }
+    ]
+  },
+  { // 关卡三：独词句与电报语言时期
+    name: "独词句·电报句",
+    questions: [
+      { q: "独词句时期一般出现在？", opts: ["13-18个月", "0-10个月", "18-24个月", "2岁以后"], ans: 0, exp: "独词句时期为13-18个月，婴儿用一个词代表一句话。" },
+      { q: "婴儿说出第一个词最早可能在？", opts: ["9个月左右", "3个月", "6个月", "1岁半"], ans: 0, exp: "婴儿说出第一个词最早可能在9个月左右，用来指代特定场所下的特定事物。" },
+      { q: "电报语言时期一般出现在？", opts: ["18-24个月", "13-18个月", "0-10个月", "2岁以后"], ans: 0, exp: "电报语言时期为18-24个月，婴幼儿开始说一些双词句。" },
+      { q: "“那书”“妈妈奶”这类双词句被称为？", opts: ["电报句", "完整句", "复合句", "长句"], ans: 0, exp: "“那书”“妈妈奶”这类双词句因简短不完整、像电报语言，被称为电报句。" },
+      { q: "19-21个月婴儿掌握新词有一个爆炸期，平均每个月可掌握多少个新词？", opts: ["25个", "3个", "10个", "50个"], ans: 0, exp: "19-21个月婴儿掌握新词有爆炸期，平均每个月可掌握25个新词，学习语言能力明显增强。" }
+    ]
+  },
+  { // 关卡四：2岁后的语言发展
+    name: "2岁后发展",
+    questions: [
+      { q: "词汇量增长率最快的时候是？", opts: ["3-4岁", "1-2岁", "5-6岁", "6-7岁"], ans: 0, exp: "幼儿词汇量增长很快，3-4岁是词汇量增长率最高的时候。" },
+      { q: "幼儿最先掌握的词是？", opts: ["名词", "动词", "形容词", "副词"], ans: 0, exp: "幼儿最先掌握的词是名词，然后是动词、形容词，词类范围逐渐扩大。" },
+      { q: "幼儿的口语表达从什么到什么发展？", opts: ["从情境性语言到连贯性语言", "从连贯性到情境性", "从书面到口头", "从内部到外部"], ans: 0, exp: "幼儿出现从情境性语言到连贯性语言的过渡，情境性需借助手势表情表达，连贯性句子完整连贯。" },
+      { q: "幼儿在独立活动中的自言自语被认为是？", opts: ["介乎外部语言和内部语言的过渡形式", "内部语言的成熟形式", "书面语言", "无意义语言"], ans: 0, exp: "幼儿在独立活动中的自言自语，被认为是介乎外部语言和内部语言的过渡形式。" },
+      { q: "幼儿在哪个时期才完全习得符合语法的口头语言？", opts: ["7岁前", "3岁前", "4岁前", "5岁前"], ans: 0, exp: "3-4岁出现符合语法的完整句子，7岁前完全习得符合语法的口头语言。" }
+    ]
+  },
+  { // 关卡五：培养婴幼儿的语言能力
+    name: "语言培养",
+    questions: [
+      { q: "培养婴幼儿语言能力，首先要？", opts: ["丰富语言环境", "尽早识字", "纠正发音", "多看电视"], ans: 0, exp: "要根据婴幼儿发展特点，在不同时期给予相应丰富的语言环境，这是培养语言的首要方法。" },
+      { q: "培养语言能力时，对发音好的幼儿应及时？", opts: ["给予鼓励和表扬", "批评指正", "忽略", "要求更高"], ans: 0, exp: "对发音好的幼儿要及时给予鼓励和表扬，调动学习语言的积极性。" },
+      { q: "成人对幼儿语言发展的作用是？", opts: ["言传身教、做好榜样示范，提供正确的口型和标准发音", "刻意模仿幼儿的稚音", "使用方言", "不干预"], ans: 0, exp: "成人是幼儿规范语言的来源，要言传身教做好榜样，不刻意模仿幼儿不规范的语音。" },
+      { q: "对语言能力较低的幼儿，应怎么做？", opts: ["多鼓励表扬、引导大胆表达、降低任务难度", "严厉批评", "放弃引导", "与其他幼儿比较"], ans: 0, exp: "对语言能力较低的幼儿要多鼓励表扬，适当降低任务难度或增加辅助，取得进步时多鼓励。" },
+      { q: "为激发幼儿阅读兴趣，应？", opts: ["以亲子阅读、教师辅导阅读形式适当展开，不注重识字量", "强制大量识字", "只读不引导", "让幼儿独自看书不陪伴"], ans: 0, exp: "对书面语言学习不过分强调，可适当展开亲子阅读、教师辅导阅读，重在培养阅读兴趣而非识字量。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是语言知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

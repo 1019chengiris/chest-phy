@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四章第四节《想象》闯关游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf6e3, #f8eccb);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    padding: 30px 35px;
+  }
+  h1 { font-size: 22px; color: #c0392b; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 18px; }
+  .progress { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-dot {
+    flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+    border-radius: 12px; margin: 4px; font-size: 12px; font-weight: bold;
+    background: #ecf0f1; color: #95a5a6;
+  }
+  .level-dot.active { background: #e74c3c; color: #fff; }
+  .level-dot.done { background: #27ae60; color: #fff; }
+  .score-bar { text-align: right; font-size: 14px; color: #e67e22; font-weight: bold; margin-bottom: 12px; }
+  .card { display: none; }
+  .card.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .q-title { font-size: 18px; color: #2c3e50; margin-bottom: 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 12px 15px; border: 2px solid #dcdde1; border-radius: 10px;
+    cursor: pointer; font-size: 15px; color: #34495e; background: #fff; transition: all 0.15s;
+  }
+  .option:hover:not(.disabled) { border-color: #e67e22; background: #fef9f0; }
+  .option.disabled { cursor: default; opacity: 0.7; }
+  .option.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: bold; }
+  .option.wrong { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
+  .feedback { margin-top: 16px; padding: 12px 15px; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.right { background: #eafaf1; color: #1e8449; border: 1px solid #27ae60; }
+  .feedback.wrong { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
+  .btn-group { margin-top: 18px; text-align: center; }
+  .btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+  .btn-next { background: #e67e22; color: #fff; }
+  .btn-next:disabled { background: #d5d8dc; cursor: not-allowed; }
+  .btn-restart { background: #95a5a6; color: #fff; }
+  .btn-restart:hover { background: #7f8c8d; }
+  .result { text-align: center; padding: 20px; }
+  .result h2 { font-size: 26px; color: #c0392b; margin-bottom: 10px; }
+  .stars { font-size: 40px; margin: 10px 0; }
+  .result p { font-size: 16px; color: #2c3e50; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎨 想象 · 闯关挑战</h1>
+  <div class="sub">学前儿童发展心理学 · 第四章第四节</div>
+
+  <div class="progress">
+    <div class="level-dot active" id="lv1">关卡一<br>想象概述</div>
+    <div class="level-dot" id="lv2">关卡二<br>想象的种类</div>
+    <div class="level-dot" id="lv3">关卡三<br>学前想象特点</div>
+    <div class="level-dot" id="lv4">关卡四<br>无意想象特点</div>
+    <div class="level-dot" id="lv5">关卡五<br>想象培养</div>
+  </div>
+  <div class="score-bar">🏆 得分：<span id="score">0</span> / 250</div>
+
+  <!-- 关卡一 -->
+  <div class="card active" id="card-lv1">
+    <div class="q-title" id="q1-title"></div>
+    <div class="options" id="q1-options"></div>
+    <div class="feedback" id="q1-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q1-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡二 -->
+  <div class="card" id="card-lv2">
+    <div class="q-title" id="q2-title"></div>
+    <div class="options" id="q2-options"></div>
+    <div class="feedback" id="q2-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q2-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡三 -->
+  <div class="card" id="card-lv3">
+    <div class="q-title" id="q3-title"></div>
+    <div class="options" id="q3-options"></div>
+    <div class="feedback" id="q3-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q3-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡四 -->
+  <div class="card" id="card-lv4">
+    <div class="q-title" id="q4-title"></div>
+    <div class="options" id="q4-options"></div>
+    <div class="feedback" id="q4-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q4-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 关卡五 -->
+  <div class="card" id="card-lv5">
+    <div class="q-title" id="q5-title"></div>
+    <div class="options" id="q5-options"></div>
+    <div class="feedback" id="q5-feedback"></div>
+    <div class="btn-group"><button class="btn btn-next" id="q5-next" disabled>下一题 →</button></div>
+  </div>
+  <!-- 结果 -->
+  <div class="card" id="card-result">
+    <div class="result">
+      <h2>🎉 挑战完成！</h2>
+      <div class="stars" id="stars"></div>
+      <p>最终得分：<span id="final-score"></span> / 250</p>
+      <p id="final-level"></p>
+      <button class="btn btn-restart" onclick="resetGame()">🔄 重新开始</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 题目库 ============
+const levels = [
+  { // 关卡一：想象概述
+    name: "想象概述",
+    questions: [
+      { q: "想象是什么？", opts: ["人脑对已有表象进行加工改造而创造出新形象的过程", "对客观事物的直接反映", "对过去的机械回忆", "对现实现象的复制"], ans: 0, exp: "想象是人脑对已有表象进行加工改造而创造出新形象的过程。" },
+      { q: "想象与现实的关系是？", opts: ["想象来源于现实，又高于现实", "想象完全脱离现实", "想象与现实无关", "想象等同于现实"], ans: 0, exp: "想象来源于现实，是对已有表象加工改造的结果，同时又超越现实创造出新形象。" },
+      { q: "想象与思维的区别在于？", opts: ["想象产生新形象，思维产生新概念判断推理", "想象和思维一样", "想象不使用表象", "思维不加工信息"], ans: 0, exp: "想象与思维都以表象或概念为加工材料，但想象主要产生新形象，思维主要形成概念、判断、推理。" },
+      { q: "幼儿绘画时把自己想象成医生给洋娃娃看病，这属于？", opts: ["想象", "记忆", "感知觉", "注意"], ans: 0, exp: "幼儿把自己想象成医生、创造医生看病的新形象，属于想象活动。" },
+      { q: "想象在幼儿认知发展中的作用是？", opts: ["是幼儿思维的重要组成部分，促进创造力发展", "阻碍认知发展", "与思维无关", "只影响游戏"], ans: 0, exp: "幼儿想象丰富，是思维的重要组成部分，在培养思维同时也要注意创造力（想象）培养。" }
+    ]
+  },
+  { // 关卡二：想象的种类
+    name: "想象的种类",
+    questions: [
+      { q: "按照是否有目的和自觉性，想象可以分为？", opts: ["无意想象和有意想象", "再造想象和创造想象", "直接想象和间接想象", "简单想象和复杂想象"], ans: 0, exp: "按目的性分，想象分为无意想象和有意想象。" },
+      { q: "按照想象内容的新颖性、独立性，想象可以分为？", opts: ["再造想象和创造想象", "无意想象和有意想象", "幻想和空想", "白日梦和夜梦"], ans: 0, exp: "按新颖性分，想象分为再造想象和创造想象。" },
+      { q: "没有预定目的、不由自主地产生的想象是？", opts: ["无意想象", "有意想象", "创造想象", "再造想象"], ans: 0, exp: "无意想象是没有预定目的、不由自主产生的想象，如幼儿看到云彩想象成动物。" },
+      { q: "根据别人语言的描述在头脑中形成相应新形象的过程是？", opts: ["再造想象", "创造想象", "无意想象", "幻想"], ans: 0, exp: "再造想象是根据别人语言的描述或图形示意，在头脑中形成相应新形象的过程。" },
+      { q: "不依据现成的描述，独立地创造出新的形象的过程是？", opts: ["创造想象", "再造想象", "无意想象", "表象"], ans: 0, exp: "创造想象是不依据现成描述，独立地创造出新形象的过程。" }
+    ]
+  },
+  { // 关卡三：学前儿童想象的特点
+    name: "学前想象特点",
+    questions: [
+      { q: "学前儿童想象以什么为主？", opts: ["无意想象和再造想象为主", "有意想象和创造想象为主", "以抽象想象为主", "以逻辑想象为主"], ans: 0, exp: "学前儿童想象以无意想象为主、再造想象为主。" },
+      { q: "幼儿想象的主题容易变化、内容比较零散，这体现了想象？", opts: ["主题易变、内容零散", "稳定、完整", "抽象、概括", "持久、连贯"], ans: 0, exp: "学前儿童想象主题易变、内容零散，想象常随情境而改变。" },
+      { q: "幼儿常常分不清想象与现实，把想象的东西当真的，这体现了想象的？", opts: ["易与现实混淆", "逻辑清晰", "内容完整", "主题稳定"], ans: 0, exp: "幼儿易把想象与现实混淆，把想象的东西当成真实的。" },
+      { q: "学前儿童想象发展水平总体较（ ），但想象内容丰富。", opts: ["低", "高", "成熟", "抽象"], ans: 0, exp: "学前儿童想象发展水平总体较低，以无意、再造想象为主，但内容非常丰富。" },
+      { q: "下列哪项不属于学前儿童想象的特点？", opts: ["创造想象已经十分丰富成熟", "无意想象为主", "再造想象为主", "想象与现实容易混淆"], ans: 0, exp: "学前儿童以无意想象和再造想象为主，创造想象并未十分成熟，故该项不属于其特点。" }
+    ]
+  },
+  { // 关卡四：学前儿童无意想象的特点
+    name: "无意想象特点",
+    questions: [
+      { q: "幼儿的无意想象具有什么特点？", opts: ["无目的性、随情境变化", "目的明确、主题稳定", "完全受意志控制", "内容抽象连贯"], ans: 0, exp: "学前儿童无意想象具有无目的性、随情境变化的特点。" },
+      { q: "幼儿看到一堆积木就想象成城堡，说明想象？", opts: ["受物体和动作触发", "完全独立产生", "有明确目的", "不受外界影响"], ans: 0, exp: "幼儿的无意想象受物体和动作的触发，看到什么物体就联想到相关形象。" },
+      { q: "幼儿的无意想象往往与什么相关？", opts: ["当前感知相关", "抽象概念相关", "逻辑推理相关", "远期计划相关"], ans: 0, exp: "幼儿无意想象与当前感知相关，随情境和感知对象的变化而变化。" },
+      { q: "幼儿画画时画到一半突然改画别的东西，这体现了无意想象的？", opts: ["主题易变、随情境变化", "主题稳定", "内容完整", "目的明确"], ans: 0, exp: "幼儿无意想象主题易变，常随情境和物体的变化而转移。" },
+      { q: "下列哪项最能说明无意想象？", opts: ["幼儿看云彩时想象云像小狗、又像小猫，不断变化", "幼儿按老师要求画一座房子", "幼儿有计划地编故事", "幼儿坚持画完一幅画"], ans: 0, exp: "看云想象成小狗又变成小猫，随情境变化，是无目的、受感知触发、主题易变的无意想象。" }
+    ]
+  },
+  { // 关卡五：培养儿童的想象
+    name: "想象培养",
+    questions: [
+      { q: "培养儿童想象，首先应丰富儿童的什么？", opts: ["感性经验", "抽象概念", "逻辑知识", "语言规则"], ans: 0, exp: "丰富的感性经验是想象的基础，培养想象首先应丰富儿童的感性经验。" },
+      { q: "通过什么方式可以激发儿童的想象？", opts: ["游戏激发、鼓励编故事", "严格限制活动", "只让听讲", "禁止想象"], ans: 0, exp: "可通过游戏激发想象、鼓励儿童编故事等方式培养想象力。" },
+      { q: "为支持儿童创造想象，应提供什么样的材料？", opts: ["开放性材料", "单一固定材料", "只有标准答案的材料", "无法组合的材料"], ans: 0, exp: "提供开放性材料，让幼儿自由组合、自由想象，有助于培养创造想象。" },
+      { q: "培养儿童想象时，应如何对待儿童的好奇心？", opts: ["保护好奇心", "打压好奇心", "限制提问", "无视好奇"], ans: 0, exp: "应保护儿童的好奇心，鼓励提问和探索，这是想象和创造的基础。" },
+      { q: "成人急于让幼儿“知道正确答案”会怎样？", opts: ["压抑幼儿的想象力和创造力", "促进想象发展", "丰富想象内容", "提高创造性"], ans: 0, exp: "不要因为急于让幼儿“知道正确答案”而压抑幼儿的想象力和创造力，应给予鼓励和引导。" }
+    ]
+  }
+];
+
+// ============ 状态管理 ============
+let currentLevel = 0;
+let currentQ = 0;
+let totalScore = 0;
+let answered = false;
+
+const levelKey = ["q1", "q2", "q3", "q4", "q5"];
+const cardKey = ["card-lv1", "card-lv2", "card-lv3", "card-lv4", "card-lv5"];
+
+function renderQuestion() {
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  answered = false;
+
+  document.getElementById(key + "-title").textContent = `第 ${currentQ+1} 题：${q.q}`;
+  const optBox = document.getElementById(key + "-options");
+  optBox.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => selectOption(i, div);
+    optBox.appendChild(div);
+  });
+  const fb = document.getElementById(key + "-feedback");
+  fb.className = "feedback";
+  fb.style.display = "none";
+  document.getElementById(key + "-next").disabled = true;
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+  const lv = levels[currentLevel];
+  const q = lv.questions[currentQ];
+  const key = levelKey[currentLevel];
+  const opts = document.querySelectorAll("#" + key + "-options .option");
+
+  opts.forEach(o => o.classList.add("disabled"));
+  if (idx === q.ans) {
+    el.classList.add("correct");
+    totalScore += 10;
+    document.getElementById("score").textContent = totalScore;
+    showFeedback(key, true, q.exp);
+  } else {
+    el.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    showFeedback(key, false, q.exp + " 正确答案：" + q.opts[q.ans]);
+  }
+  document.getElementById(key + "-next").disabled = false;
+}
+
+function showFeedback(key, isRight, text) {
+  const fb = document.getElementById(key + "-feedback");
+  fb.textContent = text;
+  fb.className = "feedback show " + (isRight ? "right" : "wrong");
+}
+
+function goNext() {
+  currentQ++;
+  const lv = levels[currentLevel];
+  if (currentQ < lv.questions.length) {
+    renderQuestion();
+  } else {
+    currentLevel++;
+    if (currentLevel < 5) {
+      document.getElementById("lv" + currentLevel).classList.add("done");
+      document.getElementById("lv" + (currentLevel+1)).classList.add("active");
+      switchCard(cardKey[currentLevel]);
+      currentQ = 0;
+      renderQuestion();
+    } else {
+      document.getElementById("lv5").classList.add("done");
+      showResult();
+    }
+  }
+}
+
+function switchCard(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showResult() {
+  document.getElementById("card-lv5").classList.remove("active");
+  document.getElementById("card-result").classList.add("active");
+  document.getElementById("final-score").textContent = totalScore;
+  let stars, levelText;
+  if (totalScore === 250) { stars = "⭐⭐⭐"; levelText = "太棒了！全对！你是想象知识小达人！"; }
+  else if (totalScore >= 200) { stars = "⭐⭐"; levelText = "很棒！对本章内容掌握得很好！"; }
+  else if (totalScore >= 150) { stars = "⭐⭐"; levelText = "不错！继续加油复习哦！"; }
+  else if (totalScore >= 100) { stars = "⭐"; levelText = "及格啦，建议再复习一下知识点。"; }
+  else { stars = "⭐"; levelText = "还需努力，请重新复习本章内容。"; }
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("final-level").textContent = levelText;
+}
+
+function resetGame() {
+  currentLevel = 0; currentQ = 0; totalScore = 0; answered = false;
+  document.getElementById("score").textContent = 0;
+  ["lv1","lv2","lv3","lv4","lv5"].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove("active","done");
+  });
+  document.getElementById("lv1").classList.add("active");
+  switchCard("card-lv1");
+  renderQuestion();
+}
+
+["q1","q2","q3","q4","q5"].forEach(key => {
+  document.getElementById(key + "-next").addEventListener("click", goNext);
+});
+
+renderQuestion();
+</script>
+</body>
+</html>
